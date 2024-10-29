@@ -1,4 +1,4 @@
-package guh.hug.voter;
+package guh.hug.voter.model;
 
 import jakarta.persistence.*;
 
@@ -13,12 +13,6 @@ public class Question {
 
     @ElementCollection
     private List<String> answers;
-
-    public Question(String text , List<String> answers) {
-        this.text = text;
-        this.answers = answers;
-
-    }
 
     public String getText() {
         return text;
