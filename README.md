@@ -13,3 +13,8 @@ This application allows users to add Questions and Answers, and then vote on the
 - Vote on Answers
 - View Questions and Answers
 
+## How to run:
+1. cd frontend
+2. ng serve
+3. run the Spring Boot application
+
