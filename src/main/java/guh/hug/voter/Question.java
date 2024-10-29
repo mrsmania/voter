@@ -7,8 +7,8 @@ import java.util.List;
 @Entity
 public class Question {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long Id;
     private String text;
 
     @ElementCollection
@@ -36,11 +36,11 @@ public class Question {
         this.answers = answers;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(Long Id) {
+        this.Id = Id;
     }
 
     public Long getId() {
-        return id;
+        return Id;
     }
 }
