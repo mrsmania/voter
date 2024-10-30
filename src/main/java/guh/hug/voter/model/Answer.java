@@ -1,9 +1,6 @@
 package guh.hug.voter.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Answer {
@@ -11,39 +8,12 @@ public class Answer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long questionId;
-    private String chosenAnswer;
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private Question question;
+
     private String playerId;
+    private String selectedAnswer;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(Long questionId) {
-        this.questionId = questionId;
-    }
-
-    public String getChosenAnswer() {
-        return chosenAnswer;
-    }
-
-    public void setChosenAnswer(String chosenAnswer) {
-        this.chosenAnswer = chosenAnswer;
-    }
-
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
-    }
+    // Getters and Setters
 }

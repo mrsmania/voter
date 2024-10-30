@@ -1,8 +1,6 @@
 package guh.hug.voter.controller;
 
-import guh.hug.voter.model.Answer;
 import guh.hug.voter.model.Question;
-import guh.hug.voter.service.AnswerService;
 import guh.hug.voter.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
