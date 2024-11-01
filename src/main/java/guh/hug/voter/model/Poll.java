@@ -12,7 +12,7 @@ public class Poll {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String token = UUID.randomUUID().toString().substring(0, 6);
+    private String token = UUID.randomUUID().toString().substring(0, 6); //TODO: ensure uniqueness
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();

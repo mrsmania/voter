@@ -26,6 +26,10 @@ public class PollService {
         return pollRepository.findAll();
     }
 
+    public Poll getPollByToken(String token) {
+        return pollRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Poll not found for token: " + token));
+    }
+
     public Poll addQuestion(String token, Question question){
         Poll poll = pollRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Poll not found for token: " + token));
         if (poll.isActive()) {
@@ -61,6 +65,4 @@ public class PollService {
         poll.setActive(false);
         return pollRepository.save(poll);
     }
-
-
 }

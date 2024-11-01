@@ -2,6 +2,10 @@ package guh.hug.voter.model;
 
 import jakarta.persistence.*;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class Option{
     @Id
@@ -9,7 +13,10 @@ public class Option{
     private Long id;
 
     private String text;
-    private int votes = 0;
+
+    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vote> votes = new ArrayList<>();
+
 
     public Long getId() {
         return id;
@@ -27,11 +34,15 @@ public class Option{
         this.text = text;
     }
 
-    public int getVotes() {
+    public List<Vote> getVotes() {
         return votes;
     }
 
-    public void setVotes(int votes) {
+    public void setVotes(List<Vote> votes) {
         this.votes = votes;
+    }
+
+    public void removeVote(Vote vote) {
+        this.votes.remove(vote);
     }
 }

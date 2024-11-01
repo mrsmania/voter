@@ -1,18 +1,28 @@
-
 package guh.hug.voter.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
 public class Vote {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
-    private String chosenOption;
 
+    @ManyToOne
+    @JoinColumn(name = "option_id")
+    @JsonIgnoreProperties("votes")
+    private Option option;
+    // Constructors, getters, and setters
+    public Vote() {}
+
+    public Vote(String username, Option option) {
+        this.username = username;
+        this.option = option;
+    }
 
     public Long getId() {
         return id;
@@ -30,11 +40,7 @@ public class Vote {
         this.username = username;
     }
 
-    public String getChosenOption() {
-        return chosenOption;
-    }
-
-    public void setChosenOption(String chosenOption) {
-        this.chosenOption = chosenOption;
+    public void setOption(Option option) {
+        this.option = option;
     }
 }

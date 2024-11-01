@@ -22,6 +22,16 @@ public class PollController {
         return pollService.getAllPolls();
     }
 
+    @GetMapping("/{token}")
+    public ResponseEntity<?> getPollByToken(@PathVariable String token) {
+        try {
+            Poll poll = pollService.getPollByToken(token);
+            return ResponseEntity.ok(poll);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @PostMapping("/create")
     public Poll createPoll(@RequestParam String hostUsername) {
         if (hostUsername == null || hostUsername.isEmpty()) {
@@ -58,4 +68,25 @@ public class PollController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @PostMapping("/{token}/activate")
+    public ResponseEntity<?> activatePoll(@PathVariable String token) {
+        try {
+            Poll updatedPoll = pollService.activatePoll(token);
+            return ResponseEntity.ok(updatedPoll);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{token}/deactivate")
+    public ResponseEntity<?> deactivatePoll(@PathVariable String token) {
+        try {
+            Poll updatedPoll = pollService.deactivatePoll(token);
+            return ResponseEntity.ok(updatedPoll);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }
