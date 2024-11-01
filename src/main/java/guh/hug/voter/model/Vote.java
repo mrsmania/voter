@@ -1,4 +1,4 @@
-/*
+
 package guh.hug.voter.model;
 
 
@@ -13,7 +13,6 @@ public class Vote {
     private String username;
     private String chosenOption;
 
-    private Question question;
 
     public Long getId() {
         return id;
@@ -38,12 +37,4 @@ public class Vote {
     public void setChosenOption(String chosenOption) {
         this.chosenOption = chosenOption;
     }
-
-    public Question getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(Question question) {
-        this.question = question;
-    }
-}*/
+}
