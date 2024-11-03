@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -27,7 +28,19 @@ public class PollService {
     }
 
     public Poll getPollByToken(String token) {
-        return pollRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Poll not found for token: " + token));
+        Optional<Poll> optionalPoll = pollRepository.findByToken(token);
+        if (optionalPoll.isEmpty()) {
+            throw new RuntimeException("Poll not found for token: " + token);
+        }
+
+        //turn optional into poll
+        Poll poll = optionalPoll.get();
+
+        if (!poll.isActive()) {
+            throw new RuntimeException("Poll with token " + token + " is not active.");
+        }
+
+        return poll;
     }
 
     public Poll addQuestion(String token, Question question){

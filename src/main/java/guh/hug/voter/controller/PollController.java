@@ -22,7 +22,9 @@ public class PollController {
         return pollService.getAllPolls();
     }
 
-    @GetMapping("/{token}")
+
+
+    @GetMapping( "/{token}/get")
     public ResponseEntity<?> getPollByToken(@PathVariable String token) {
         try {
             Poll poll = pollService.getPollByToken(token);
@@ -31,6 +33,7 @@ public class PollController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
     @PostMapping("/create")
     public Poll createPoll(@RequestParam String hostUsername) {

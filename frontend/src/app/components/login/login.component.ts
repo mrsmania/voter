@@ -2,18 +2,18 @@
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { PollService } from '../../services/poll.service';
 import {Router} from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
 })
 export class LoginComponent {
   @ViewChild('otpForm') otpForm!: ElementRef;
 
-  constructor(private pollService: PollService, private router: Router) {}
+  constructor(private pollService: PollService, private router: Router, private toastr: ToastrService) {}
 
   ngAfterViewInit() {
     const form = this.otpForm.nativeElement as HTMLFormElement;
@@ -21,7 +21,7 @@ export class LoginComponent {
     const submit = form.querySelector('button[type="submit"]') as HTMLButtonElement;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!/^[a-zA-Z0-9_.-]{1}$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && !e.metaKey) {
+      if (!/^[a-zA-Z0-9_.-]$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'Tab' && !e.metaKey) {
         e.preventDefault();
       }
       if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -50,9 +50,6 @@ export class LoginComponent {
     const handlePaste = (e: ClipboardEvent) => {
       e.preventDefault();
       const text = e.clipboardData?.getData('text') || '';
-      if (!new RegExp(`^[0-9]{${inputs.length}}$`).test(text)) {
-        return;
-      }
       const digits = text.split('');
       inputs.forEach((input, index) => (input.value = digits[index].toUpperCase() || ''));
       submit.focus();
@@ -61,7 +58,11 @@ export class LoginComponent {
     submit.addEventListener('click', (e) => {
       e.preventDefault();
       const token = inputs.map((input) => input.value).join('');
-      this.fetchPoll(token);
+      if (token.length !== 6) {
+        this.toastr.error('Bitte geben Sie einen 6-stelligen Code ein.', 'Fehler');
+        return;
+      }
+      this.fetchPoll(token.toUpperCase());
     });
 
     inputs.forEach((input) => {
@@ -70,17 +71,17 @@ export class LoginComponent {
       input.addEventListener('focus', handleFocus);
       input.addEventListener('paste', handlePaste);
     });
+  }
 
-    }
-    // API-Aufruf und Navigation bei erfolgreichem Abruf
-    fetchPoll(token: string) {
-      this.pollService.getPollByToken(token).subscribe({
-        next: (poll) => {
-          this.router.navigate(['/poll', token], { state: { poll } });
-        },
-        error: (err) => {
-          console.error('Poll not found:', err);
-        }
-      });
+  fetchPoll(token: string) {
+    this.pollService.getPollByToken(token).subscribe({
+      next: (poll) => {
+        this.router.navigate(['/poll', token], { state: { poll } });
+      },
+      error: (err) => {
+        this.toastr.error(err.error, 'Fehler');
+        console.error('Poll not found:', err);
+      }
+    });
   }
 }

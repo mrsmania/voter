@@ -16,6 +16,8 @@ public class Question {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Option> options = new ArrayList<>();
 
+
+
     public Long getId() {
         return id;
     }
