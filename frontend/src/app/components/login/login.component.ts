@@ -1,13 +1,15 @@
 
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { PollService } from '../../services/poll.service';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [],
+  imports: [
+    RouterLink
+  ],
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
@@ -59,7 +61,13 @@ export class LoginComponent {
       e.preventDefault();
       const token = inputs.map((input) => input.value).join('');
       if (token.length !== 6) {
-        this.toastr.error('Bitte geben Sie einen 6-stelligen Code ein.', 'Fehler');
+        this.toastr.error('Bitte geben Sie einen 6-stelligen Code ein.', 'Fehler', {
+          timeOut: 5000,
+          positionClass: 'toast-top-center',
+          closeButton: true,
+          progressBar: true,
+          progressAnimation: 'increasing',
+        });
         return;
       }
       this.fetchPoll(token.toUpperCase());
