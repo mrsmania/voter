@@ -16,10 +16,11 @@ public class PollService {
     @Autowired
     private PollRepository pollRepository;
 
-    public Poll createPoll(String hostUsername) {
+    public Poll createPoll(String hostUserEmail) {
         Poll poll = new Poll();
-        poll.setHostUsername(hostUsername);
+        poll.setHostUserEmail(hostUserEmail);
         poll.setActive(false);
+
         return pollRepository.save(poll);
     }
 
@@ -61,6 +62,15 @@ public class PollService {
             throw new RuntimeException("A poll must have at least 1 question.");
         }
         poll.getQuestions().removeIf(question -> question.getId().equals(questionId));
+        return pollRepository.save(poll);
+    }
+
+    public Poll deleteAllQuestions(String token) {
+        Poll poll = pollRepository.findByToken(token).orElseThrow(() -> new RuntimeException("Poll not found for token: " + token));
+        if (poll.isActive()) {
+            throw new RuntimeException("Poll is active. Cannot remove question.");
+        }
+        poll.getQuestions().clear();
         return pollRepository.save(poll);
     }
     

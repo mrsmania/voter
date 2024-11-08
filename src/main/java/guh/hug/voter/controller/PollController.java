@@ -9,10 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 @RestController
 @RequestMapping("/api/poll")
 public class PollController {
+
+    private static final String EMAIL_REGEX = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
     @Autowired
     private PollService pollService;
@@ -36,12 +42,24 @@ public class PollController {
 
 
     @PostMapping("/create")
-    public Poll createPoll(@RequestParam String hostUsername) {
-        if (hostUsername == null || hostUsername.isEmpty()) {
-            throw new IllegalArgumentException("Host username must not be empty.");
+    public ResponseEntity<?> createPoll(@RequestParam String hostUserEmail) {
+        try {
+            if (hostUserEmail == null || hostUserEmail.isEmpty()) {
+                return ResponseEntity.badRequest().body("Host username must not be empty.");
+            }
+            if (!isValidEmail(hostUserEmail)) {
+                return ResponseEntity.badRequest().body("Invalid email address.");
+            }
+            Poll poll = pollService.createPoll(hostUserEmail);
+            return ResponseEntity.ok(poll);
         }
-        return pollService.createPoll(hostUsername);
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
+
+
 
     @PostMapping("/{token}/addQuestion")
     public ResponseEntity<?> addQuestion(@PathVariable String token, @RequestBody Question question) {
@@ -90,6 +108,11 @@ public class PollController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+
+    private boolean isValidEmail(String email) {
+        Matcher matcher = EMAIL_PATTERN.matcher(email);
+        return matcher.matches();
     }
 
 }

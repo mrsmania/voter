@@ -3,8 +3,25 @@
 <div class="">
   <h1 class="text-4xl font-bold text-slate-900 mb-12">Create a new poll</h1>
   <div class="flex flex-col gap-3">
-    <app-username></app-username>
-    <app-questions></app-questions>
-    <button class="mt-6 font-bold inline-flex justify-center whitespace-nowrap rounded-lg bg-green-900 px-3.5 py-2.5 text-sm text-white shadow-sm shadow-indigo-950/10 hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-green-300 transition-colors duration-150">Create Poll</button>
+    <app-user-email (usernameSubmitted)="onUsernameSubmitted($event)"></app-user-email>
+    <div *ngIf="token" class="flex flex-col text-center py-6 bg-slate-900 my-6 text-slate-200 rounded-2xl">
+      <h2>Poll token to share your poll</h2>
+      <p class="w-full  text-6xl font-black tracking-tighter">{{ token }}</p>
+      <h2 class="mt-3">Your password</h2>
+      <p class="w-full  text-6xl font-black tracking-tighter">{{ password }}</p>
+
+      <p class="text-xl font-semibold mt-3">Save this data, to edit your poll later! </p>
+    </div>
+    <!--<div *ngIf="showQuestions">-->
+      <div *ngFor="let question of questions; let i = index">
+        <app-question [index]="i" (delete)="removeQuestion($event)"></app-question>
+      </div>
+      <button (click)="addQuestion()" class="font-bold inline-flex justify-center whitespace-nowrap rounded-lg bg-slate-900 px-3.5 py-2.5 text-sm text-white shadow-sm shadow-indigo-950/10 hover:bg-slate-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-slate-300 transition-colors duration-150">
+        Add Another Question
+      </button>
+        <app-state></app-state>
+    <!--</div>-->
   </div>
+
+
 </div>

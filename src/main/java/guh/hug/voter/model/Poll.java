@@ -13,12 +13,21 @@ public class Poll {
     private Long id;
 
     private String token = UUID.randomUUID().toString().substring(0, 6).toUpperCase(); //TODO: ensure uniqueness
+    private String password = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
-    private String hostUsername;
+    private String hostUserEmail;
     private boolean isActive = false;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public boolean isActive() {
         return isActive;
@@ -28,12 +37,12 @@ public class Poll {
         isActive = active;
     }
 
-    public String getHostUsername() {
-        return hostUsername;
+    public String getHostUserEmail() {
+        return hostUserEmail;
     }
 
-    public void setHostUsername(String hostUsername) {
-        this.hostUsername = hostUsername;
+    public void setHostUserEmail(String hostUsername) {
+        this.hostUserEmail = hostUsername;
     }
 
     public List<Question> getQuestions() {
