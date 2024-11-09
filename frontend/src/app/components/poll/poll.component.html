@@ -1,19 +1,23 @@
-<main class="bg-slate-100 py-32">
-  <div class="flex flex-col gap-6">
-    <div *ngIf="errorMessage" class="text-6xl font-black w-full  text-center">
-      <p>{{ errorMessage }}</p>
-    </div>
-    <a href="/" class="text-center"> go back </a>
-  </div>
-  <div *ngIf="poll && !errorMessage">
-    <h1>{{ poll.title }}</h1>
-    <p>{{ poll.description }}</p>
+<main class="bg-slate-100">
 
-    <div *ngFor="let question of poll.questions">
-      <h2>{{ question.text }}</h2>
-      <ul>
-        <li *ngFor="let option of question.options">
-          {{ option.text }} (Votes: {{ option.votes.length }})
+  <a href="/" class="mb-12 font-bold w-min inline-flex justify-center items-center gap-1 whitespace-nowrap rounded-lg bg-slate-900 px-3.5 py-2.5 text-sm text-white shadow-sm shadow-indigo-950/10 hover:bg-slate-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150">
+    <svg class="w-6 h-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path class="stroke-current" d="M5 12H19M5 12L11 6M5 12L11 18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    BACK
+  </a>
+
+  <div *ngIf="poll && !errorMessage" class="flex flex-col gap-12">
+    <div *ngFor="let question of poll.questions " class="flex flex-col gap-3">
+      <h2 class="font-bold tracking-tight text-slate-900 text-4xl">{{ question.text }}</h2>
+      <ul class="grid grid-cols-1 sm:grid-cols-[repeat(2,1fr)] gap-6">
+        <li id="{{option.id}}" *ngFor="let option of question.options" class="border shadow-md rounded-xl p-12 flex flex-col gap-3 items-center cursor-pointer hover:shadow-sm hover:bg-slate-200 transition-all">
+          <p class="font-semibold">
+            {{ option.text }}
+          </p>
+          <p class="text-xs">
+            (Votes: {{ option.votes.length }})
+          </p>
         </li>
       </ul>
     </div>

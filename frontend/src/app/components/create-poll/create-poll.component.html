@@ -1,27 +1,47 @@
 
 
 <div class="">
-  <h1 class="text-4xl font-bold text-slate-900 mb-12">Create a new poll</h1>
+
   <div class="flex flex-col gap-3">
-    <app-user-email (usernameSubmitted)="onUsernameSubmitted($event)"></app-user-email>
+
+    <app-user-email
+      *ngIf="showForms"
+      [(userEmail)]="userEmail"
+      (emailSubmitted)="createPoll()">
+    </app-user-email>
+
+    <app-update-poll-credentials
+      *ngIf="showForms"
+      (loadPoll)="loadPoll($event)">
+    </app-update-poll-credentials>
+
+
     <div *ngIf="token" class="flex flex-col text-center py-6 bg-slate-900 my-6 text-slate-200 rounded-2xl">
-      <h2>Poll token to share your poll</h2>
+      <h2>Token to share your poll</h2>
       <p class="w-full  text-6xl font-black tracking-tighter">{{ token }}</p>
       <h2 class="mt-3">Your password</h2>
       <p class="w-full  text-6xl font-black tracking-tighter">{{ password }}</p>
-
       <p class="text-xl font-semibold mt-3">Save this data, to edit your poll later! </p>
     </div>
-    <!--<div *ngIf="showQuestions">-->
+    <div *ngIf="showQuestions">
       <div *ngFor="let question of questions; let i = index">
-        <app-question [index]="i" (delete)="removeQuestion($event)"></app-question>
+        <app-question [index]="i"
+                      [questionText]="question.text"
+                      [options]="question.options"
+                      (delete)="removeQuestion(i)">
+
+        </app-question>
       </div>
       <button (click)="addQuestion()" class="font-bold inline-flex justify-center whitespace-nowrap rounded-lg bg-slate-900 px-3.5 py-2.5 text-sm text-white shadow-sm shadow-indigo-950/10 hover:bg-slate-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-slate-300 transition-colors duration-150">
         Add Another Question
       </button>
-        <app-state></app-state>
-    <!--</div>-->
+      <app-state [active]="active"></app-state>
+      <button (click)="savePoll()" class="mt-12 disabled:hover:bg-green-200 disabled:bg-green-200 disabled:text-green-400 font-bold gap-3 inline-flex justify-center items-center whitespace-nowrap rounded-lg bg-green-900 px-3.5 py-2.5 text-sm text-white shadow-sm shadow-indigo-950/10 hover:bg-green-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-green-300 transition-colors duration-150">
+        SAVE POLL
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M18.1716 1C18.702 1 19.2107 1.21071 19.5858 1.58579L22.4142 4.41421C22.7893 4.78929 23 5.29799 23 5.82843V20C23 21.6569 21.6569 23 20 23H4C2.34315 23 1 21.6569 1 20V4C1 2.34315 2.34315 1 4 1H18.1716ZM4 3C3.44772 3 3 3.44772 3 4V20C3 20.5523 3.44772 21 4 21L5 21L5 15C5 13.3431 6.34315 12 8 12L16 12C17.6569 12 19 13.3431 19 15V21H20C20.5523 21 21 20.5523 21 20V6.82843C21 6.29799 20.7893 5.78929 20.4142 5.41421L18.5858 3.58579C18.2107 3.21071 17.702 3 17.1716 3H17V5C17 6.65685 15.6569 8 14 8H10C8.34315 8 7 6.65685 7 5V3H4ZM17 21V15C17 14.4477 16.5523 14 16 14L8 14C7.44772 14 7 14.4477 7 15L7 21L17 21ZM9 3H15V5C15 5.55228 14.5523 6 14 6H10C9.44772 6 9 5.55228 9 5V3Z"/>
+        </svg>
+      </button>
+    </div>
   </div>
-
-
 </div>

@@ -10,16 +10,19 @@ export class PollService {
   constructor(private http: HttpClient) {}
 
   getPollByToken(token: string): Observable<any> {
-    return this.http.get(`${environment.apiUrl}/poll/${token}/get`);
+    return this.http.get(`${environment.apiUrl}/poll/${token}`);
   }
-
 
   submitUserEmail(hostUserEmail: string): Observable<any> {
     const params = new HttpParams().set('hostUserEmail', hostUserEmail);
     return this.http.post(`${environment.apiUrl}/poll/create`, params);
   }
 
-  submitQuestion(pollData: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/poll/submitQuestion`, pollData);
+  savePoll(pollData: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/poll/save`, pollData);
+  }
+
+  getPollByTokenPasswordEmail(token: string, password: string, email: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/poll`, { params: { token, password, email } });
   }
 }

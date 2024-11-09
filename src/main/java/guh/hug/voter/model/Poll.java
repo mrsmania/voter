@@ -12,14 +12,14 @@ public class Poll {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String token = UUID.randomUUID().toString().substring(0, 6).toUpperCase(); //TODO: ensure uniqueness
+    private String token;
     private String password = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
 
     private String hostUserEmail;
-    private boolean isActive = false;
+    private boolean active = false;
 
     public String getPassword() {
         return password;
@@ -29,12 +29,13 @@ public class Poll {
         this.password = password;
     }
 
-    public boolean isActive() {
-        return isActive;
+
+    public boolean getActive() { // Use getActive() instead of isActive()
+        return active;
     }
 
     public void setActive(boolean active) {
-        isActive = active;
+        this.active = active;
     }
 
     public String getHostUserEmail() {

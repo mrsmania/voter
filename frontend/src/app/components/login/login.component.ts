@@ -86,9 +86,9 @@ export class LoginComponent {
       next: (poll) => {
         this.router.navigate(['/poll', token], { state: { poll } });
       },
-      error: (err) => {
-        this.toastr.error(err.error, 'Error');
-        console.error('Poll not found:', err);
+      error: (error) => {
+        const errorMessage = error.error?.message || 'Failed to save poll';
+        this.toastr.error(errorMessage);
       }
     });
   }

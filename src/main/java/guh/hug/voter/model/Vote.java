@@ -10,7 +10,7 @@ public class Vote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    private String userEmail;
 
     @ManyToOne
     @JoinColumn(name = "option_id")
@@ -19,8 +19,8 @@ public class Vote {
     // Constructors, getters, and setters
     public Vote() {}
 
-    public Vote(String username, Option option) {
-        this.username = username;
+    public Vote(String userEmail, Option option) {
+        this.userEmail = userEmail;
         this.option = option;
     }
 
@@ -32,12 +32,12 @@ public class Vote {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserEmail(String username) {
+        this.userEmail = username;
     }
 
     public void setOption(Option option) {

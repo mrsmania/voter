@@ -12,9 +12,11 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  -webkit-text-fill-color: black;
-  -webkit-box-shadow: -10px 0 0 1000px rgb(241 245 249) inset;
-  box-shadow: -10px 0 0 1000px rgb(241 245 249) inset;
-  color: black;
-  border: none!important;
+  @apply border-none accent-neutral-700 bg-neutral-100 text-neutral-900;
+  -webkit-text-fill-color: rgb(148 163 184 / var(--tw-text-opacity));
+  -webkit-box-shadow: -10px 0 0 1000px rgb(226 232 240 / var(--tw-bg-opacity)) inset;
+  box-shadow: -10px 0 0 1000px rgb(226 232 240 / var(--tw-bg-opacity)) inset;
+
+  //color: black;
+  //border: none!important;
 }

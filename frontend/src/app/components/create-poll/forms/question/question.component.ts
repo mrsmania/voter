@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Output, Input} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgForOf, NgIf} from '@angular/common';
-import {PollService} from '../../../services/poll.service';
+import {PollService} from '../../../../services/poll.service';
 
 @Component({
   selector: 'app-question',
@@ -15,14 +15,14 @@ import {PollService} from '../../../services/poll.service';
   templateUrl: './question.component.html',
 })
 export class QuestionComponent {
-  questionText: string = '';
-  options: string[] = ['', '']; // Initialize with two empty options
 
-  @Input() index!: number;  // Receive the question index
-  @Output() delete = new EventEmitter<number>();  // Emit the delete action
+  @Input() questionText: string = '';
+  @Input() options: string[] = ['', ''];
+  @Input() index!: number;
+  @Output() delete = new EventEmitter<number>();
 
   onDelete() {
-    this.delete.emit(this.index);  // Emit the index to the parent component
+    this.delete.emit(this.index);
   }
 
   addOptionField() {
@@ -37,5 +37,12 @@ export class QuestionComponent {
 
   trackByIndex(index: number, item: any): number {
     return index;
+  }
+
+  getQuestionData() {
+    return {
+      text: this.questionText,
+      options: this.options.map(optionText => ({ text: optionText }))
+    };
   }
 }

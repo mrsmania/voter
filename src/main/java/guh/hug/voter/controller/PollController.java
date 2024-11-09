@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,8 +20,6 @@ import java.util.regex.Pattern;
 @RequestMapping("/api/poll")
 public class PollController {
 
-    private static final String EMAIL_REGEX = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
     @Autowired
     private PollService pollService;
@@ -30,13 +31,26 @@ public class PollController {
 
 
 
-    @GetMapping( "/{token}/get")
+    @GetMapping( "/{token}")
     public ResponseEntity<?> getPollByToken(@PathVariable String token) {
         try {
             Poll poll = pollService.getPollByToken(token);
             return ResponseEntity.ok(poll);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
+        }
+    }
+
+
+    @PostMapping("/save")
+    public ResponseEntity<?> savePoll(@RequestBody Poll poll) {
+        try {
+            Poll savedPoll = pollService.savePoll(poll);
+            return ResponseEntity.ok(savedPoll);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 
@@ -44,14 +58,11 @@ public class PollController {
     @PostMapping("/create")
     public ResponseEntity<?> createPoll(@RequestParam String hostUserEmail) {
         try {
-            if (hostUserEmail == null || hostUserEmail.isEmpty()) {
-                return ResponseEntity.badRequest().body("Host username must not be empty.");
-            }
-            if (!isValidEmail(hostUserEmail)) {
-                return ResponseEntity.badRequest().body("Invalid email address.");
-            }
             Poll poll = pollService.createPoll(hostUserEmail);
             return ResponseEntity.ok(poll);
+        }
+        catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
         }
         catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -60,59 +71,14 @@ public class PollController {
     }
 
 
-
-    @PostMapping("/{token}/addQuestion")
-    public ResponseEntity<?> addQuestion(@PathVariable String token, @RequestBody Question question) {
+    @GetMapping
+    public ResponseEntity<?> getPoll(@RequestParam String token, @RequestParam String password, @RequestParam String email) {
         try {
-            if (question == null) {
-                return ResponseEntity.badRequest().body("Question must not be null.");
-            }
-            if (question.getText() == null || question.getText().isEmpty()) {
-                return ResponseEntity.badRequest().body("Question text must not be empty.");
-            }
-            if (question.getOptions() == null || question.getOptions().size() <= 1) {
-                return ResponseEntity.badRequest().body("A question must have at least 2 options.");
-            }
-            Poll poll = pollService.addQuestion(token, question);
+            Poll poll = pollService.findPollByTokenAndPasswordAndEmail(token, password, email);
             return ResponseEntity.ok(poll);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
         }
-    }
-
-    @DeleteMapping("/{token}/removeQuestion/{questionId}")
-    public ResponseEntity<?> removeQuestion(@PathVariable String token, @PathVariable Long questionId) {
-        try {
-            Poll updatedPoll = pollService.removeQuestion(token, questionId);
-            return ResponseEntity.ok(updatedPoll);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/{token}/activate")
-    public ResponseEntity<?> activatePoll(@PathVariable String token) {
-        try {
-            Poll updatedPoll = pollService.activatePoll(token);
-            return ResponseEntity.ok(updatedPoll);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
-    @PostMapping("/{token}/deactivate")
-    public ResponseEntity<?> deactivatePoll(@PathVariable String token) {
-        try {
-            Poll updatedPoll = pollService.deactivatePoll(token);
-            return ResponseEntity.ok(updatedPoll);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
-    private boolean isValidEmail(String email) {
-        Matcher matcher = EMAIL_PATTERN.matcher(email);
-        return matcher.matches();
     }
 
 }

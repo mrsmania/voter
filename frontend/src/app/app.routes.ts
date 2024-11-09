@@ -7,7 +7,8 @@ import {CreatePollComponent} from './components/create-poll/create-poll.componen
 export const routes: Routes = [
   { path: '', component: LoginComponent },
   { path: 'poll/:token', component: PollComponent },
-  { path: 'create/poll', component: CreatePollComponent }
+  { path: 'create/poll', component: CreatePollComponent },
+
 ];
 
 @NgModule({

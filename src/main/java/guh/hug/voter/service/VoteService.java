@@ -18,10 +18,10 @@ public class VoteService {
     private OptionRepository optionRepository;
 
     @Transactional
-    public void addVote(Long optionId, String username) {
+    public void addVote(Long optionId, String userEmail) {
         Option option = optionRepository.findById(optionId)
                 .orElseThrow(() -> new RuntimeException("Option not found"));
-        Vote vote = new Vote(username, option);
+        Vote vote = new Vote(userEmail, option);
         voteRepository.save(vote);
     }
 
@@ -29,13 +29,21 @@ public class VoteService {
         voteRepository.deleteById(voteId);
     }
 
-    public void updateVote(Long voteId, Long optionId, String username) {
+    public void updateVote(Long voteId, Long optionId, String userEmail) {
         Option option = optionRepository.findById(optionId)
                 .orElseThrow(() -> new RuntimeException("Option not found"));
         Vote vote = voteRepository.findById(voteId)
                 .orElseThrow(() -> new RuntimeException("Vote not found"));
-        vote.setUsername(username);
+        vote.setUserEmail(userEmail);
         vote.setOption(option);
         voteRepository.save(vote);
+    }
+
+    public void upsertVote(Long voteId, Long optionId, String userEmail) {
+        if (voteId == null) {
+            addVote(optionId, userEmail);
+        } else {
+            updateVote(voteId, optionId, userEmail);
+        }
     }
 }
