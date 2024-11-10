@@ -1,6 +1,6 @@
-package guh.hug.voter.repository;
+package zhaw.voter.repository;
 
-import guh.hug.voter.model.Poll;
+import zhaw.voter.model.Poll;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

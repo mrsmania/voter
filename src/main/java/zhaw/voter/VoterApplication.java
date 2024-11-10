@@ -1,4 +1,4 @@
-package guh.hug.voter;
+package zhaw.voter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

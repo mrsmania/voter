@@ -1,19 +1,15 @@
-package guh.hug.voter.controller;
+package zhaw.voter.controller;
 
 
-import guh.hug.voter.model.Question;
-import guh.hug.voter.model.Poll;
-import guh.hug.voter.service.PollService;
+import zhaw.voter.model.Poll;
+import zhaw.voter.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 @RestController

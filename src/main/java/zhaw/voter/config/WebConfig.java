@@ -1,4 +1,4 @@
-package guh.hug.voter.config;
+package zhaw.voter.config;
 
 
 import org.springframework.context.annotation.Bean;

@@ -23,7 +23,7 @@ This application allows users to add Questions and Answers, and then vote on the
 
 ### Backend:
 in a new Terminal
-1. npm install -g @angular/cli
+1. (if not already) npm install -g @angular/cli
  
 ### Frontend:
 in a new Terminal in the root folder:

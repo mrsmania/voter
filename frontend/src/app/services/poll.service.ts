@@ -25,4 +25,10 @@ export class PollService {
   getPollByTokenPasswordEmail(token: string, password: string, email: string): Observable<any> {
     return this.http.get(`${environment.apiUrl}/poll`, { params: { token, password, email } });
   }
+
+  vote(userEmail: string, optionId: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/vote`, null, { params: {userEmail: userEmail, optionId: optionId.toString()}});
+  }
+
+
 }

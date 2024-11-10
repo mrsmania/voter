@@ -1,29 +1,25 @@
-package guh.hug.voter.service;
+package zhaw.voter.service;
 
-import guh.hug.voter.model.Option;
-import guh.hug.voter.model.Question;
-import guh.hug.voter.model.Poll;
-import guh.hug.voter.repository.PollRepository;
-import guh.hug.voter.repository.QuestionRepository;
-import guh.hug.voter.repository.OptionRepository;
+import zhaw.voter.model.Option;
+import zhaw.voter.model.Question;
+import zhaw.voter.model.Poll;
+import zhaw.voter.repository.PollRepository;
+import zhaw.voter.repository.QuestionRepository;
+import zhaw.voter.repository.OptionRepository;
+import zhaw.voter.util.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 @Service
 public class PollService {
 
-    private static final String EMAIL_REGEX = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
 
     @Autowired
     private PollRepository pollRepository;
@@ -35,8 +31,8 @@ public class PollService {
     private OptionRepository optionRepository;
 
     public Poll createPoll(String hostUserEmail) {
-        validateEmail(hostUserEmail);
 
+        EmailValidator.validate(hostUserEmail);
 
         Poll poll = new Poll();
         poll.setHostUserEmail(hostUserEmail);
@@ -62,9 +58,6 @@ public class PollService {
             existingPoll.getQuestions().clear();
             existingPoll.getQuestions().addAll(poll.getQuestions());
             existingPoll.setActive(poll.getActive());
-
-            //log poll.isActive() to see if it is true or false
-            System.out.println(poll.getActive());
 
             for (Question question : existingPoll.getQuestions()) {
                 optionRepository.saveAll(question.getOptions());
@@ -133,21 +126,6 @@ public class PollService {
                 }
             }
         }
-    }
-
-    private void validateEmail(String email) {
-        if (email == null || email.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email address is required.");
-        }
-
-        if (!isValidEmail(email)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email address.");
-        }
-    }
-
-    private boolean isValidEmail(String email) {
-        Matcher matcher = EMAIL_PATTERN.matcher(email);
-        return matcher.matches();
     }
 
 }

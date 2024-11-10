@@ -3,16 +3,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PollService } from '../../services/poll.service';
 import { CommonModule } from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-poll',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './poll.component.html'
 })
 export class PollComponent implements OnInit {
   poll: any;
   errorMessage: string | null = null;
+  userEmail: string = '';
 
 
   constructor(
@@ -33,11 +35,41 @@ export class PollComponent implements OnInit {
         this.poll = poll;
       },
       error: (error) => {
-        console.log(error);
+        this.router.navigate(['/']);
         const errorMessage = error.error?.message || 'Failed to load poll';
         this.toastr.error(errorMessage);
       }
     });
+  }
+
+
+  upsertVote(optionId: number) {
+    this.pollService.vote(this.userEmail, optionId).subscribe({
+      next: () => {
+        this.toastr.success('Vote recorded!');
+        this.toggleVoteCount(optionId); // Toggle the vote count in the UI
+      },
+      error: (error) => {
+        const errorMessage = error.error?.message || 'Failed to submit vote';
+        this.toastr.error(errorMessage);
+      }
+    });
+  }
+
+
+  private toggleVoteCount(optionId: number) {
+    const option = this.poll.questions
+      .flatMap((q: any) => q.options)
+      .find((o: any) => o.id === optionId);
+
+    if (option) {
+      const existingVoteIndex = option.votes.findIndex((vote: any) => vote.userEmail === this.userEmail);
+      if (existingVoteIndex > -1) {
+        option.votes.splice(existingVoteIndex, 1);
+      } else {
+        option.votes.push({ userEmail: this.userEmail });
+      }
+    }
   }
 
 }

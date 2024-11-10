@@ -1,4 +1,4 @@
-package guh.hug.voter.model;
+package zhaw.voter.model;
 
 import jakarta.persistence.*;
 

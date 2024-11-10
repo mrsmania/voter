@@ -1,4 +1,4 @@
-package guh.hug.voter.model;
+package zhaw.voter.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -13,8 +13,8 @@ public class Vote {
     private String userEmail;
 
     @ManyToOne
-    @JoinColumn(name = "option_id")
     @JsonIgnoreProperties("votes")
+    @JoinColumn(name = "option_id")
     private Option option;
     // Constructors, getters, and setters
     public Vote() {}
