@@ -35,6 +35,10 @@ in a new Terminal in the root folder:
 ### Backend:
 1. Run the Spring Boot application
 2. The application will be available at `http://localhost:8080`
+3. DB Console: `http://localhost:8080/h2-console`
+   * JDBC URL: `jdbc:h2:file:./data/test`
+   * User Name: `sa`
+   * Password: `password`
 
 ### Frontend:
 1. cd frontend
