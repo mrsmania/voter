@@ -19,6 +19,8 @@ public class VoteService {
     private final VoteRepository voteRepository;
     private final OptionRepository optionRepository;
 
+    private List<Vote> test;
+
     @Autowired
     public VoteService(VoteRepository voteRepository, OptionRepository optionRepository) {
         this.voteRepository = voteRepository;
@@ -48,6 +50,7 @@ public class VoteService {
 
     public List<Vote> votesByUserEmailAndPollId(String userEmail, Long pollId) {
         EmailValidator.validate(userEmail);
+
         return voteRepository.findAllByUserEmailAndPollId(userEmail, pollId);
     }
 

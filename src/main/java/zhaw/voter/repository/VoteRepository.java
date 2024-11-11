@@ -11,12 +11,12 @@ import java.util.List;
 @Repository
 public interface VoteRepository extends JpaRepository<Vote, Long> {
     Vote findByUserEmailAndOptionId(String userEmail, Long optionId);
-    @Query(value = "SELECT v.* FROM Vote v " +
-            "JOIN Option o ON v.OPTION_ID = o.id " +
-            "JOIN Question q ON o.QUESTION_ID = q.id " +
-            "JOIN Poll p ON q.POLL_ID = p.id " +
-            "WHERE v.USER_EMAIL = :userEmail " +
-            "AND p.id = :pollId", nativeQuery = true)
+    @Query("SELECT v FROM Vote v " +
+            "JOIN v.option o " +
+            "JOIN o.question q " +
+            "JOIN q.poll p " +
+            "WHERE v.userEmail = :userEmail " +
+            "AND p.id = :pollId")
     List<Vote> findAllByUserEmailAndPollId(@Param("userEmail") String userEmail, @Param("pollId") Long pollId);
 
 }

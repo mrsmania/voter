@@ -32,6 +32,7 @@ public class VoteController {
 
     @GetMapping("/votes")
     public ResponseEntity<?> getVotesByUserAndPollId(@RequestParam String userEmail, @RequestParam Long pollId) {
+
         try {
             return ResponseEntity.ok(voteService.votesByUserEmailAndPollId(userEmail, pollId));
         } catch (ResponseStatusException e) {

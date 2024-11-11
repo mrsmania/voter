@@ -45,8 +45,8 @@ export class PollComponent implements OnInit {
   submitEmail() {
     this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
       next: (votes) => {
-        console.log(votes);
         this.highlightUserVotes(votes);
+        console.log(`votes: ${JSON.stringify(votes)}`);
       },
       error: (error) => {
         const errorMessage = error.error?.message || 'Failed to load votes';
@@ -56,11 +56,16 @@ export class PollComponent implements OnInit {
   }
 
 
-  upsertVote(optionId: number) {
+  toggleVote(optionId: number) {
     this.pollService.vote(this.userEmail, optionId).subscribe({
       next: () => {
         this.toastr.success('Vote recorded!');
-        this.toggleVoteCount(optionId); // Toggle the vote count in the UI
+        this.toggleVoteCount(optionId);
+        this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
+          next: (votes) => {
+            this.highlightUserVotes(votes);
+          }
+        });
       },
       error: (error) => {
         const errorMessage = error.error?.message || 'Failed to submit vote';
@@ -84,13 +89,18 @@ export class PollComponent implements OnInit {
       }
     }
   }
+
   private highlightUserVotes(votes: any[]) {
-    // Mark options as voted based on retrieved votes
     this.poll.questions.forEach((question: any) => {
       question.options.forEach((option: any) => {
-        option.votedByUser = votes.some((vote: any) => vote.optionId === option.id);
+        // Check if the current option was voted on by the user
+        option.votedByUser = votes.some((vote: any) => vote.option_id === option.id);
+
+        // Debug logging to confirm
+        console.log(`Option ID ${option.id} votedByUser: ${option.votedByUser}`);
       });
     });
   }
+
 
 }

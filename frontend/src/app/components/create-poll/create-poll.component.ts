@@ -137,5 +137,6 @@ export class CreatePollComponent {
       }
     });
   }
+
 }
 
