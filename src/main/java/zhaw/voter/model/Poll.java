@@ -1,5 +1,6 @@
 package zhaw.voter.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -15,7 +16,8 @@ public class Poll {
     private String token;
     private String password = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Question> questions = new ArrayList<>();
 
     private String hostUserEmail;
@@ -52,14 +54,19 @@ public class Poll {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+        for (Question question : questions) {
+            question.setPoll(this); // Set the poll reference in each question
+        }
     }
 
     public void addQuestion(Question question) {
         this.questions.add(question);
+        question.setPoll(this);
     }
 
     public void removeQuestion(Question question) {
         this.questions.remove(question);
+        question.setPoll(null);
     }
 
     public String getToken() {

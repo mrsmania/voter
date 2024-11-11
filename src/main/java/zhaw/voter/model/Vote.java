@@ -14,9 +14,9 @@ public class Vote {
 
     @ManyToOne
     @JsonIgnoreProperties("votes")
-    @JoinColumn(name = "option_id")
+    @JoinColumn(name = "OPTION_ID")
     private Option option;
-    // Constructors, getters, and setters
+
     public Vote() {}
 
     public Vote(String userEmail, Option option) {

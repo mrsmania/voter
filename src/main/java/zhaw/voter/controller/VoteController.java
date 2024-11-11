@@ -29,4 +29,14 @@ public class VoteController {
             return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
         }
     }
+
+    @GetMapping("/votes")
+    public ResponseEntity<?> getVotesByUserAndPollId(@RequestParam String userEmail, @RequestParam Long pollId) {
+        try {
+            return ResponseEntity.ok(voteService.votesByUserEmailAndPollId(userEmail, pollId));
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
+        }
+    }
+
 }

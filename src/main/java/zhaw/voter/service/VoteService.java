@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class VoteService {
 
@@ -42,6 +44,11 @@ public class VoteService {
             Vote vote = new Vote(userEmail, option);
             return voteRepository.save(vote);
         }
+    }
+
+    public List<Vote> votesByUserEmailAndPollId(String userEmail, Long pollId) {
+        EmailValidator.validate(userEmail);
+        return voteRepository.findAllByUserEmailAndPollId(userEmail, pollId);
     }
 
 }

@@ -1,5 +1,6 @@
 package zhaw.voter.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 
@@ -16,6 +17,11 @@ public class Option{
 
     @OneToMany(mappedBy = "option", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vote> votes = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "QUESTION_ID")
+    @JsonBackReference
+    private Question question;
 
 
     public Long getId() {
@@ -44,5 +50,13 @@ public class Option{
 
     public void removeVote(Vote vote) {
         this.votes.remove(vote);
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 }

@@ -1,5 +1,7 @@
 package zhaw.voter.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -13,9 +15,14 @@ public class Question {
 
     private String text;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Option> options = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "POLL_ID")
+    @JsonBackReference
+    private Poll poll;
 
 
     public Long getId() {
@@ -40,14 +47,26 @@ public class Question {
 
     public void setOptions(List<Option> options) {
         this.options = options;
+        for (Option option : options) {
+            option.setQuestion(this); // Set the poll reference in each question
+        }
     }
 
     public void addOption(Option option) {
         this.options.add(option);
+        option.setQuestion(this);
     }
 
     public void removeOption(Option option) {
         this.options.remove(option);
+        option.setQuestion(null);
     }
 
+    public Poll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(Poll poll) {
+        this.poll = poll;
+    }
 }

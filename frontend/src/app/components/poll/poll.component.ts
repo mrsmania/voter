@@ -42,6 +42,19 @@ export class PollComponent implements OnInit {
     });
   }
 
+  submitEmail() {
+    this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
+      next: (votes) => {
+        console.log(votes);
+        this.highlightUserVotes(votes);
+      },
+      error: (error) => {
+        const errorMessage = error.error?.message || 'Failed to load votes';
+        this.toastr.error(errorMessage);
+      }
+    });
+  }
+
 
   upsertVote(optionId: number) {
     this.pollService.vote(this.userEmail, optionId).subscribe({
@@ -70,6 +83,14 @@ export class PollComponent implements OnInit {
         option.votes.push({ userEmail: this.userEmail });
       }
     }
+  }
+  private highlightUserVotes(votes: any[]) {
+    // Mark options as voted based on retrieved votes
+    this.poll.questions.forEach((question: any) => {
+      question.options.forEach((option: any) => {
+        option.votedByUser = votes.some((vote: any) => vote.optionId === option.id);
+      });
+    });
   }
 
 }
