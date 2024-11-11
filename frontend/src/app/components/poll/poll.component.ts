@@ -94,7 +94,7 @@ export class PollComponent implements OnInit {
     this.poll.questions.forEach((question: any) => {
       question.options.forEach((option: any) => {
         // Check if the current option was voted on by the user
-        option.votedByUser = votes.some((vote: any) => vote.option_id === option.id);
+        option.votedByUser = votes.some((vote: any) => vote.optionId === option.id);
 
         // Debug logging to confirm
         console.log(`Option ID ${option.id} votedByUser: ${option.votedByUser}`);

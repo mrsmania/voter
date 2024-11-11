@@ -1,5 +1,6 @@
 package zhaw.voter.service;
 
+import zhaw.voter.dto.VoteDTO;
 import zhaw.voter.model.Option;
 import zhaw.voter.model.Vote;
 import zhaw.voter.repository.OptionRepository;
@@ -48,10 +49,11 @@ public class VoteService {
         }
     }
 
-    public List<Vote> votesByUserEmailAndPollId(String userEmail, Long pollId) {
+    public List<VoteDTO> votesByUserEmailAndPollId(String userEmail, Long pollId) {
         EmailValidator.validate(userEmail);
 
         return voteRepository.findAllByUserEmailAndPollId(userEmail, pollId);
+
     }
 
 }
