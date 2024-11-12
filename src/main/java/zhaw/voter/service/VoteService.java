@@ -1,5 +1,6 @@
 package zhaw.voter.service;
 
+import zhaw.voter.dto.VoteCountDTO;
 import zhaw.voter.dto.VoteDTO;
 import zhaw.voter.model.Option;
 import zhaw.voter.model.Vote;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VoteService {
@@ -53,7 +55,14 @@ public class VoteService {
         EmailValidator.validate(userEmail);
 
         return voteRepository.findAllByUserEmailAndPollId(userEmail, pollId);
+    }
 
+
+    public List<VoteCountDTO> getUpdatedVoteCounts(Long pollId) {
+        List<Option> options = optionRepository.findByPollId(pollId);
+        return options.stream()
+                .map(option -> new VoteCountDTO(option.getId(), option.getVotes().size()))
+                .collect(Collectors.toList());
     }
 
 }

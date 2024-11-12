@@ -42,4 +42,9 @@ public class VoteController {
             return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
         }
     }
+
+    @GetMapping("/counts")
+    public ResponseEntity<?> getUpdatedVoteCounts(@RequestParam Long pollId) {
+        return ResponseEntity.ok(voteService.getUpdatedVoteCounts(pollId));
+    }
 }

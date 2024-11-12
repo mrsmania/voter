@@ -33,4 +33,8 @@ export class PollService {
   getVotesByEmailAndPollId(userEmail: string, pollId: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/vote/votes`, { params: {userEmail, pollId: pollId.toString()}});;
   }
+
+  getUpdatedVoteCounts(pollId: number): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/vote/counts`, { params: {pollId: pollId.toString()}});
+  }
 }
