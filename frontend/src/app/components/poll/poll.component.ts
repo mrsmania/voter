@@ -1,9 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PollService } from '../../services/poll.service';
 import { CommonModule } from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
 import {FormsModule} from '@angular/forms';
+import {Stomp} from '@stomp/stompjs';
+
+import SockJS from 'sockjs-client';
+
+
 
 @Component({
   selector: 'app-poll',
@@ -11,10 +16,11 @@ import {FormsModule} from '@angular/forms';
   imports: [CommonModule, FormsModule],
   templateUrl: './poll.component.html'
 })
-export class PollComponent implements OnInit {
+export class PollComponent implements OnInit, OnDestroy {
   poll: any;
   errorMessage: string | null = null;
   userEmail: string = '';
+  private stompClient: any;
 
 
   constructor(
@@ -42,7 +48,40 @@ export class PollComponent implements OnInit {
     });
   }
 
+
+  connectWebSocket() {
+    const socket = new SockJS('http://localhost:8080/ws');
+    this.stompClient = Stomp.over(socket);
+
+    this.stompClient.connect({}, (frame: any) => {
+      console.log('Connected: ' + frame);
+      this.stompClient.subscribe('/topic/votes', (message: any) => {
+        if (message.body) {
+          this.refreshVotes();
+        }
+      });
+    });
+  }
+
+
+  refreshVotes() {
+    this.pollService.getPollByToken(this.poll.token).subscribe({
+      next: (poll) => {
+        this.poll = poll;
+        this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
+          next: (votes) => {
+            this.highlightUserVotes(votes);
+          }
+        });
+      },
+      error: (error) => {
+        this.errorMessage = 'Failed to load updated poll data';
+      }
+    });
+  }
+
   submitEmail() {
+    this.connectWebSocket();
     this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
       next: (votes) => {
         this.highlightUserVotes(votes);
@@ -92,13 +131,17 @@ export class PollComponent implements OnInit {
   private highlightUserVotes(votes: any[]) {
     this.poll.questions.forEach((question: any) => {
       question.options.forEach((option: any) => {
-        // Check if the current option was voted on by the user
         option.votedByUser = votes.some((vote: any) => vote.optionId === option.id);
-
-        // Debug logging to confirm
-        console.log(`Option ID ${option.id} votedByUser: ${option.votedByUser}`);
       });
     });
+  }
+
+  ngOnDestroy() {
+    if (this.stompClient) {
+      this.stompClient.disconnect(() => {
+        console.log('Disconnected');
+      });
+    }
   }
 
 

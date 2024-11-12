@@ -1,5 +1,6 @@
 package zhaw.voter.controller;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import zhaw.voter.model.Vote;
 import zhaw.voter.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,16 @@ public class VoteController {
     @Autowired
     private VoteService voteService;
 
+
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @PostMapping
     public ResponseEntity<?> toggleVote(@RequestParam String userEmail, @RequestParam Long optionId) {
         try {
             Vote vote = voteService.toggleVote(userEmail, optionId);
-            if (vote == null) {
-                return ResponseEntity.ok(Map.of("message", "Vote removed"));
-            }
-            return ResponseEntity.ok(vote);
+            messagingTemplate.convertAndSend("/topic/votes", "Vote updated");
+            return ResponseEntity.ok(Map.of("message", "Vote toggled"));
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
         }
@@ -39,5 +42,4 @@ public class VoteController {
             return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
         }
     }
-
 }

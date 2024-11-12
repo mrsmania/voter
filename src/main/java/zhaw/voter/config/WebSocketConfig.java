@@ -1,6 +1,4 @@
-/*
-package guh.hug.voter.config;
-
+package zhaw.voter.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -13,13 +11,16 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/voting-websocket").setAllowedOrigins("*").withSockJS();
-    }
-
-    @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
     }
-}*/
+
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        // Set the allowed origins for WebSocket connections
+        registry.addEndpoint("/ws")
+                .setAllowedOrigins("http://localhost:4200") // Allow requests from Angular app
+                .withSockJS();
+    }
+}
