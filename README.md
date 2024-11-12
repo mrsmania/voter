@@ -33,7 +33,7 @@ in a new Terminal in the root folder:
 
 ## How to run:
 ### Backend:
-1. Run the Spring Boot application
+1. Run the Spring Boot application (main method in the VoterApplication class)
 2. The application will be available at `http://localhost:8080`
 3. DB Console: `http://localhost:8080/h2-console`
    * JDBC URL: `jdbc:h2:file:./data/test`
