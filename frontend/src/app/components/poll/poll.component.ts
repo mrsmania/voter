@@ -46,7 +46,6 @@ export class PollComponent implements OnInit {
     this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
       next: (votes) => {
         this.highlightUserVotes(votes);
-        console.log(`votes: ${JSON.stringify(votes)}`);
       },
       error: (error) => {
         const errorMessage = error.error?.message || 'Failed to load votes';

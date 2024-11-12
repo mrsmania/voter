@@ -27,7 +27,7 @@
         <li
           (click)="toggleVote(option.id)"
           *ngFor="let option of question.options"
-          [ngClass]="{ 'bg-slate-300 !shadow-none': option.votedByUser }"
+          [ngClass]="{ '!bg-green-100 !shadow-none border-green-200': option.votedByUser }"
           class="border shadow-md rounded-xl p-12 flex flex-col gap-3 items-center cursor-pointer hover:shadow-sm hover:bg-slate-200 transition-all">
           <p class="font-semibold">
             {{ option.text }}
