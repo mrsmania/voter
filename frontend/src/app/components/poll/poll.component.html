@@ -19,7 +19,9 @@
 
   <div *ngIf="poll && !errorMessage" class="flex flex-col gap-12">
     <div *ngFor="let question of poll.questions ; let i = index" class="flex flex-col gap-3">
+
       <h2 class="font-bold tracking-tight text-slate-900 text-4xl">{{ question.text }}</h2>
+
       <div class="w-full max-w-96 mx-auto ">
 
         <canvas
@@ -30,7 +32,14 @@
         </canvas>
 
       </div>
-
+      <div *ngIf="question.multipleChoice" class="flex gap-3 justify-center items-center text-slate-400">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 23" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9 2H2v7h7V2ZM2 0a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2Z"/><path d="M10.335 12.51A1.992 1.992 0 0 0 9 12H2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-5.156l-.448.449L9.5 17.345l-.5.518V21H2v-7h6.867l.633-.655.835-.835Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M11.466 13.395a1 1 0 0 1 0 1.415L6.81 19.465a1 1 0 0 1-1.415 0l-2.102-2.102a1 1 0 1 1 1.414-1.414l1.395 1.395 3.95-3.95a1 1 0 0 1 1.414 0ZM21 14h-7v7h7v-7Zm-7-2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-7Z"/><path d="M22.335.51A1.992 1.992 0 0 0 21 0h-7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V3.844l-.448.449L21.5 5.345l-.5.518V9h-7V2h6.867l.633-.655.835-.835Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M15.293 3.95a1 1 0 0 1 1.414 0l1.395 1.395 3.95-3.95a1 1 0 1 1 1.414 1.415L18.81 7.466a1 1 0 0 1-1.414 0l-2.102-2.102a1 1 0 0 1 0-1.414Z"/></svg>
+        <p class="font-semibold">Multiple Choice</p>
+      </div>
+      <div *ngIf="!question.multipleChoice" class="flex gap-3 justify-center items-center text-slate-400">
+        <svg class="w-5 h-5 fill-current" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9 2H2v7h7V2ZM2 0a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2ZM10.335 12.51A1.992 1.992 0 0 0 9 12H2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-5.156l-.448.449L9.5 17.345l-.5.518V21H2v-7h6.867l.633-.655.835-.835Z"/><path fill-rule="evenodd" clip-rule="evenodd" d="M3.293 15.95a1 1 0 0 1 1.414 0l1.395 1.395 3.95-3.95a1 1 0 0 1 1.414 1.415L6.81 19.465a1 1 0 0 1-1.415 0l-2.102-2.102a1 1 0 0 1 0-1.414ZM21 14h-7v7h7v-7Zm-7-2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-7ZM21 2h-7v7h7V2Zm-7-2a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-7Z"/></svg>
+        <p class="font-semibold ">Single Choice</p>
+      </div>
       <ul class="grid grid-cols-1 sm:grid-cols-[repeat(2,1fr)] gap-6">
         <li
           (click)="toggleVote(option.id)"
