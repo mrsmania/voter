@@ -19,6 +19,9 @@ public class Question {
     @JsonManagedReference
     private List<Option> options = new ArrayList<>();
 
+
+    private Boolean multipleChoice;
+
     @ManyToOne
     @JoinColumn(name = "POLL_ID")
     @JsonBackReference
@@ -68,5 +71,14 @@ public class Question {
 
     public void setPoll(Poll poll) {
         this.poll = poll;
+    }
+
+
+    public Boolean getMultipleChoice() {
+        return multipleChoice;
+    }
+
+    public void setMultipleChoice(Boolean multipleChoice) {
+        this.multipleChoice = multipleChoice;
     }
 }

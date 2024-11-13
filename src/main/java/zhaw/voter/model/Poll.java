@@ -16,6 +16,7 @@ public class Poll {
     private String token;
     private String password = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
 
+
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Question> questions = new ArrayList<>();
@@ -83,5 +84,9 @@ public class Poll {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 }

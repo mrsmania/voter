@@ -31,9 +31,7 @@ public class PollService {
     private OptionRepository optionRepository;
 
     public Poll createPoll(String hostUserEmail) {
-
         EmailValidator.validate(hostUserEmail);
-
         Poll poll = new Poll();
         poll.setHostUserEmail(hostUserEmail);
         poll.setActive(false);
@@ -47,7 +45,6 @@ public class PollService {
 
     public Poll savePoll(Poll poll) {
         validatePoll(poll);
-
         Optional<Poll> existingPollOpt = pollRepository.findById(poll.getId());
         if (existingPollOpt.isPresent()) {
             Poll existingPoll = existingPollOpt.get();

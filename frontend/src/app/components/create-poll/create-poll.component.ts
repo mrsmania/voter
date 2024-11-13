@@ -7,6 +7,7 @@ import {PollService} from '../../services/poll.service';
 import {ToastrService} from 'ngx-toastr';
 import {FormsModule} from '@angular/forms';
 import {UpdatePollCredentialsComponent} from './forms/update-poll-credentials/update-poll-credentials.component';
+import {LightSwitchComponent} from './forms/light-switch/light-switch.component';
 
 @Component({
   selector: 'app-create-poll',
@@ -18,7 +19,8 @@ import {UpdatePollCredentialsComponent} from './forms/update-poll-credentials/up
     NgForOf,
     StateComponent,
     FormsModule,
-    UpdatePollCredentialsComponent
+    UpdatePollCredentialsComponent,
+    LightSwitchComponent
   ],
   standalone: true,
 })

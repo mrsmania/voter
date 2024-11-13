@@ -39,13 +39,22 @@ public class VoteService {
 
         Vote existingVote = voteRepository.findByUserEmailAndOptionId(userEmail, optionId);
 
+        //if question is not multiple choice, delete all votes of the user
+
+        if (!option.getQuestion().getMultipleChoice()) {
+            List<Option> options = optionRepository.findByQuestionId(option.getQuestion().getId());
+            for (Option o : options) {
+                Vote v = voteRepository.findByUserEmailAndOptionId(userEmail, o.getId());
+                if (v != null) {
+                    voteRepository.delete(v);
+                }
+            }
+        }
+
         if (existingVote != null) {
-            System.out.println("Removing vote by user: " + userEmail + " for optionId: " + optionId);
             voteRepository.delete(existingVote);
-            return null;  // Return null or response indicating un-vote
+            return null;
         } else {
-            // Log new vote creation
-            System.out.println("Creating vote by user: " + userEmail + " for optionId: " + optionId);
             Vote vote = new Vote(userEmail, option);
             return voteRepository.save(vote);
         }
@@ -53,7 +62,6 @@ public class VoteService {
 
     public List<VoteDTO> votesByUserEmailAndPollId(String userEmail, Long pollId) {
         EmailValidator.validate(userEmail);
-
         return voteRepository.findAllByUserEmailAndPollId(userEmail, pollId);
     }
 

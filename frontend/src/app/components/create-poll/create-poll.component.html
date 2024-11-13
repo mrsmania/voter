@@ -31,11 +31,13 @@
                       (delete)="removeQuestion(i)">
 
         </app-question>
+
       </div>
       <button (click)="addQuestion()" class="font-bold inline-flex justify-center whitespace-nowrap rounded-lg bg-slate-900 px-3.5 py-2.5 text-sm text-white shadow-sm shadow-indigo-950/10 hover:bg-slate-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-slate-300 transition-colors duration-150">
         Add Another Question
       </button>
       <app-state [active]="active"></app-state>
+
       <button (click)="savePoll()" class="mt-12 disabled:hover:bg-green-200 disabled:bg-green-200 disabled:text-green-400 font-bold gap-3 inline-flex justify-center items-center whitespace-nowrap rounded-lg bg-green-900 px-3.5 py-2.5 text-sm text-white shadow-sm shadow-indigo-950/10 hover:bg-green-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-green-300 transition-colors duration-150">
         SAVE POLL
         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
