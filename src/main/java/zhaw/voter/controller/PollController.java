@@ -1,15 +1,12 @@
 package zhaw.voter.controller;
 
-
-import org.springframework.http.ContentDisposition;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.apache.coyote.Response;
+import org.springframework.http.*;
 import org.springframework.web.multipart.MultipartFile;
 import zhaw.voter.dto.QuestionDTO;
 import zhaw.voter.model.Poll;
 import zhaw.voter.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -23,18 +20,30 @@ import java.util.Objects;
 @RequestMapping("/api/poll")
 public class PollController {
 
-
     @Autowired
     private PollService pollService;
 
     @GetMapping("/all")
-    public Iterable<Poll> getAllPolls() {
-        return pollService.getAllPolls();
+    public ResponseEntity<?> getAllPolls() {
+        try {
+            List<Poll> polls = pollService.getAllPolls();
+            return ResponseEntity.ok(polls);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
+        }
     }
 
+    @GetMapping("/tokens")
+    public ResponseEntity<?> getAllTokens() {
+        try {
+            List<String> tokens = pollService.getAllTokens();
+            return ResponseEntity.ok(tokens);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
+        }
+    }
 
-
-    @GetMapping( "/{token}")
+    @GetMapping("/{token}")
     public ResponseEntity<?> getPollByToken(@PathVariable String token) {
         try {
             Poll poll = pollService.getPollByToken(token);
@@ -72,9 +81,6 @@ public class PollController {
         }
     }
 
-
-
-
     @PostMapping("/save")
     public ResponseEntity<?> savePoll(@RequestBody Poll poll) {
         try {
@@ -87,22 +93,18 @@ public class PollController {
         }
     }
 
-
     @PostMapping("/create")
     public ResponseEntity<?> createPoll(@RequestParam String hostUserEmail) {
         try {
             Poll poll = pollService.createPoll(hostUserEmail);
             return ResponseEntity.ok(poll);
-        }
-        catch (ResponseStatusException e) {
+        } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }
-
 
     @GetMapping
     public ResponseEntity<?> getPoll(@RequestParam String token, @RequestParam String password, @RequestParam String email) {
