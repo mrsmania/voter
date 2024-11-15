@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -146,6 +147,16 @@ public class PollService {
                         .append(option.getVotes().size())
                         .append("\n");
             }
+        }
+
+        try {
+            //save the file with timestamp
+            FileWriter csvWriter = new FileWriter("src/main/resources/dump/exportedPolls/pollResults_" + System.currentTimeMillis() + ".csv");
+            csvWriter.append(csvBuilder.toString());
+            csvWriter.flush();
+            csvWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return csvBuilder.toString();

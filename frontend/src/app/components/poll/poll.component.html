@@ -17,7 +17,7 @@
     </label>
   </div>
 
-  <div *ngIf="poll && !errorMessage" class="flex flex-col gap-12">
+  <div *ngIf="poll && !errorMessage" class="flex flex-col gap-24">
     <div *ngFor="let question of poll.questions ; let i = index" class="flex flex-col gap-3">
 
       <h2 class="font-bold tracking-tight text-slate-900 text-4xl">{{ question.text }}</h2>
@@ -54,11 +54,11 @@
           </p>
         </li>
       </ul>
-      <button
-        (click)="downloadCSV()"
-        class="px-4 py-2 bg-slate-900 text-white rounded shadow hover:bg-slate-700">
-        Download Results as CSV
-      </button>
     </div>
+    <button
+      (click)="downloadCSV()"
+      class="px-4 py-2 bg-slate-900 text-white rounded shadow hover:bg-slate-700">
+      Download Results as CSV
+    </button>
   </div>
 </main>
