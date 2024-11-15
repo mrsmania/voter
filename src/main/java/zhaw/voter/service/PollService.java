@@ -72,7 +72,23 @@ public class PollService {
 
 
     public List<Poll> getAllPolls() {
-        return pollRepository.findAll();
+        List<Poll> polls = pollRepository.findAll();
+        if (polls.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No polls found.");
+        }
+        return polls;
+    }
+
+    public List<String> getAllTokens() {
+        List<Poll> polls = pollRepository.findAll();
+        if (polls.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No polls found.");
+        }
+        List<String> tokens = new ArrayList<>();
+        for (Poll poll : polls) {
+            tokens.add(poll.getToken());
+        }
+        return tokens;
     }
 
     public Poll getPollByToken(String token) {
@@ -88,7 +104,6 @@ public class PollService {
     }
 
 
-
     public Poll findPollByTokenAndPasswordAndEmail(String token, String password, String email) {
         if (token == null || token.trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token is required.");
@@ -100,8 +115,7 @@ public class PollService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required.");
         }
         try {
-            return pollRepository.findByTokenAndPasswordAndHostUserEmail(token, password, email)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found or access denied"));
+            return pollRepository.findByTokenAndPasswordAndHostUserEmail(token, password, email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found or access denied"));
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found or access denied");
         }
@@ -137,15 +151,7 @@ public class PollService {
 
         for (Question question : poll.getQuestions()) {
             for (Option option : question.getOptions()) {
-                csvBuilder
-                        .append(poll.getToken())
-                        .append(";")
-                        .append(question.getText())
-                        .append(";")
-                        .append(option.getText())
-                        .append(";")
-                        .append(option.getVotes().size())
-                        .append("\n");
+                csvBuilder.append(poll.getToken()).append(";").append(question.getText()).append(";").append(option.getText()).append(";").append(option.getVotes().size()).append("\n");
             }
         }
 
@@ -185,6 +191,4 @@ public class PollService {
 
         return questions;
     }
-
-
 }
