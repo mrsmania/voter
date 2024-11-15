@@ -163,6 +163,24 @@ export class PollComponent implements OnInit, OnDestroy {
     });
   }
 
+
+  downloadCSV() {
+    this.pollService.exportPollResults(this.poll.token).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'poll-results.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.toastr.error('Failed to download CSV file.');
+      },
+    });
+  }
+
+
   ngOnDestroy() {
     if (this.stompClient) {
       this.stompClient.disconnect(() => {

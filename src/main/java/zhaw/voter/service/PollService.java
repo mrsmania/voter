@@ -125,4 +125,28 @@ public class PollService {
         }
     }
 
+    public String generatePollResultsCSV(String token) {
+        Poll poll = getPollByToken(token);
+
+        StringBuilder csvBuilder = new StringBuilder();
+        csvBuilder.append("Poll;Question;Option;Vote Count\n");
+
+        for (Question question : poll.getQuestions()) {
+            for (Option option : question.getOptions()) {
+                csvBuilder
+                        .append(poll.getToken())
+                        .append(";")
+                        .append(question.getText())
+                        .append(";")
+                        .append(option.getText())
+                        .append(";")
+                        .append(option.getVotes().size())
+                        .append("\n");
+            }
+        }
+
+        return csvBuilder.toString();
+    }
+
+
 }

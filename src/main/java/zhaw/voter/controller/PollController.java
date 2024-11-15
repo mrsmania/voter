@@ -1,6 +1,9 @@
 package zhaw.voter.controller;
 
 
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import zhaw.voter.model.Poll;
 import zhaw.voter.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,23 @@ public class PollController {
             return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
         }
     }
+
+    @GetMapping("/{token}/export")
+    public ResponseEntity<byte[]> exportPollResults(@PathVariable String token) {
+        try {
+            String csvData = pollService.generatePollResultsCSV(token);
+            byte[] csvBytes = csvData.getBytes();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("poll-results.csv").build());
+
+            return ResponseEntity.ok().headers(headers).body(csvBytes);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(null);
+        }
+    }
+
 
 
     @PostMapping("/save")

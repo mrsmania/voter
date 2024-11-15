@@ -37,4 +37,10 @@ export class PollService {
   getUpdatedVoteCounts(pollId: number): Observable<any> {
     return this.http.get(`${environment.apiUrl}/vote/counts`, { params: {pollId: pollId.toString()}});
   }
+
+  exportPollResults(token: string): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/poll/${token}/export`, {
+      responseType: 'blob',
+    });
+  }
 }
