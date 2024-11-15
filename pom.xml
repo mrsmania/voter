@@ -8,7 +8,7 @@
         <version>3.3.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>guh.hug</groupId>
+    <groupId>zhaw</groupId>
     <artifactId>voter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>voter</name>
@@ -64,6 +64,7 @@
     </dependencies>
 
     <build>
+        <defaultGoal>spring-boot:run</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
