@@ -8,6 +8,7 @@ import {Stomp} from '@stomp/stompjs';
 import { BaseChartDirective } from 'ng2-charts';
 import SockJS from 'sockjs-client';
 import {ChartConfiguration, ChartData, ChartOptions} from 'chart.js';
+import {environment} from '../../../environments/environment';
 
 
 @Component({
@@ -79,7 +80,7 @@ export class PollComponent implements OnInit, OnDestroy {
   }
 
   connectWebSocket() {
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS(`${environment.backendUrl}/ws`);
     this.stompClient = Stomp.over(socket);
 
     this.stompClient.connect({}, (frame: any) => {
@@ -122,10 +123,11 @@ export class PollComponent implements OnInit, OnDestroy {
   }
 
   toggleVote(optionId: number) {
+
     this.pollService.vote(this.userEmail, optionId).subscribe({
       next: () => {
         this.toastr.success('Vote recorded!');
-        this.toggleVoteCount(optionId);
+
         this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
           next: (votes) => {
             this.highlightUserVotes(votes);
@@ -140,7 +142,8 @@ export class PollComponent implements OnInit, OnDestroy {
   }
 
 
-  private toggleVoteCount(optionId: number) {
+
+  /*private toggleVoteCount(optionId: number) {
     const option = this.poll.questions
       .flatMap((q: any) => q.options)
       .find((o: any) => o.id === optionId);
@@ -153,7 +156,7 @@ export class PollComponent implements OnInit, OnDestroy {
         option.votes.push({ userEmail: this.userEmail });
       }
     }
-  }
+  }*/
 
   private highlightUserVotes(votes: any[]) {
     this.poll.questions.forEach((question: any) => {
