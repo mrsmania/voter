@@ -1,5 +1,7 @@
+class Environment {
+  production = false;
+  backendUrl = 'http://localhost:8080';
+  apiUrl = `${this.backendUrl}/api`;
+}
 
-export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:8080/api'
-};
+export const environment = new Environment();
