@@ -1,7 +1,7 @@
 import {Component, QueryList, ViewChildren} from '@angular/core';
 import {UserEmailComponent} from './forms/user-email/user-email.component';
 import {QuestionComponent} from './forms/question/question.component';
-import {NgForOf, NgIf} from '@angular/common';
+import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {StateComponent} from './forms/state/state.component';
 import {PollService} from '../../services/poll.service';
 import {ToastrService} from 'ngx-toastr';
@@ -20,7 +20,8 @@ import {LightSwitchComponent} from './forms/light-switch/light-switch.component'
     StateComponent,
     FormsModule,
     UpdatePollCredentialsComponent,
-    LightSwitchComponent
+    LightSwitchComponent,
+    NgClass
   ],
   standalone: true,
 })
@@ -33,6 +34,7 @@ export class CreatePollComponent {
   active = false;
   userEmail: string = '';
   submittingUserEmail: boolean = false;
+  isDragging = false;
 
 
   showForms = true;
@@ -139,6 +141,62 @@ export class CreatePollComponent {
       }
     });
   }
+
+  // Handle file selection
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.uploadFile(input.files[0]);
+    }
+  }
+
+  // Handle drag over event
+  onDragOver(event: DragEvent): void {
+    event.preventDefault(); // Prevent default behavior (open file in browser)
+    this.isDragging = true;
+  }
+
+  // Handle drag leave event
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isDragging = false;
+  }
+
+  // Handle drop event
+  onDrop(event: DragEvent): void {
+    event.preventDefault(); // Prevent default behavior
+    this.isDragging = false;
+
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      const file = event.dataTransfer.files[0];
+      this.uploadFile(file);
+    }
+  }
+
+  // Upload file logic
+  private uploadFile(file: File): void {
+    if (file.type !== 'text/csv') {
+      this.toastr.error('Only CSV files are allowed', 'Invalid File Type');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.pollService.uploadQuestions(formData).subscribe({
+      next: (questions: any[]) => {
+        this.toastr.success('Questions uploaded successfully');
+        this.questions = this.questions.filter(q => q.text.trim() !== '' || q.options.some((o: string) => o.trim() !== ''));
+        this.questions = [...this.questions, ...questions];
+      },
+      error: (error) => {
+        const errorMessage = error.error?.message || 'Failed to upload questions';
+        this.toastr.error(errorMessage);
+        console.error(error);
+      },
+    });
+  }
+
 
 }
 

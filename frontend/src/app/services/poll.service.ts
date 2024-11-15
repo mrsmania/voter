@@ -43,4 +43,8 @@ export class PollService {
       responseType: 'blob',
     });
   }
+
+  uploadQuestions(fileData: FormData): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/poll/upload-questions`, fileData);
+  }
 }

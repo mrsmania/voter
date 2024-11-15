@@ -4,6 +4,8 @@ package zhaw.voter.controller;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+import zhaw.voter.dto.QuestionDTO;
 import zhaw.voter.model.Poll;
 import zhaw.voter.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -55,6 +59,19 @@ public class PollController {
             return ResponseEntity.status(e.getStatusCode()).body(null);
         }
     }
+
+    @PostMapping("/upload-questions")
+    public ResponseEntity<?> uploadQuestions(@RequestParam("file") MultipartFile file) {
+        try {
+            List<QuestionDTO> questions = pollService.verifyAndParseQuestions(file);
+            return ResponseEntity.ok(questions);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid file format"));
+        }
+    }
+
 
 
 

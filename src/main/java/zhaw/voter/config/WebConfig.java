@@ -13,7 +13,7 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**") // Definiert die Pfade, die CORS erlauben
+                registry.addMapping("/api/**")
                         .allowedOrigins("http://localhost:4200") // Angular-Entwicklungsserver
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*");
