@@ -11,6 +11,6 @@ import {environment} from '../../../environments/environment';
 export class QrLinkComponent {
   public myAngularxQrCode: string = '';
   constructor() {
-    this.myAngularxQrCode = `${environment.backendUrl}`;
+    this.myAngularxQrCode = `${environment.url}`;
   }
 }
