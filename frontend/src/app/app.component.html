@@ -1,5 +1,16 @@
 
 <app-header></app-header>
+<div *ngIf="isIndex" class="absolute top-4 right-4">
+  <a href="/qr" class="bg-red-200">
+    <div class="p-3">
+    <svg class=" w-6 h-6 fill-slate-50 " viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xml:space="preserve">
+      <path d="M4 4h4V2H2v6h2zm0 12H2v6h6v-2H4zm16 4h-4v2h6v-6h-2zM16 4h4v4h2V2h-6z"/>
+      <path d="M5 11h6V5H5v6zm2-4h2v2H7V7zM5 19h6v-6H5v6zm2-4h2v2H7v-2zM19 5h-6v6h6V5zm-2 4h-2V7h2v2zm-4 4h2v2h-2zm2 2h2v2h-2zm2 2h2v2h-2zm0-4h2v2h-2z"/>
+  </svg>
+    </div>
+  </a>
+
+</div>
 <main class="bg-slate-100 text-slate-600">
   <div class="max-w-screen-sm px-3 py-32 mx-auto">
      <router-outlet />

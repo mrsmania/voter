@@ -6,7 +6,7 @@
     </svg>
     BACK
   </a>
-  <div class="flex flex-col text-center py-6 bg-slate-900 my-12 text-slate-200 rounded-2xl">
+  <div *ngIf="poll?.token" class="flex flex-col text-center py-6 bg-slate-900 my-12 text-slate-200 rounded-2xl">
     <h2>Poll Token</h2>
     <p class="w-full  text-6xl font-black tracking-tighter">{{ poll.token }}</p>
   </div>

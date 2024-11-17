@@ -7,7 +7,7 @@ import {FormsModule} from '@angular/forms';
 import {Stomp} from '@stomp/stompjs';
 import { BaseChartDirective } from 'ng2-charts';
 import SockJS from 'sockjs-client';
-import {ChartConfiguration, ChartData, ChartOptions} from 'chart.js';
+import {ChartData, ChartOptions} from 'chart.js';
 import {environment} from '../../../environments/environment';
 
 
@@ -23,7 +23,6 @@ export class PollComponent implements OnInit, OnDestroy {
   userEmail: string = '';
   private stompClient: any;
 
-
   public pieChartData: ChartData<'pie'>[] = [];
   public pieChartOptions: ChartOptions<'pie'> = {
     responsive: true,
@@ -33,7 +32,6 @@ export class PollComponent implements OnInit, OnDestroy {
       }
     }
   };
-
 
   @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
 
@@ -73,7 +71,7 @@ export class PollComponent implements OnInit, OnDestroy {
         {
           data: question.options.map((option: any) => option.votes.length),
           backgroundColor: COLORS.slice(0, question.options.length),
-          optionBorderColor: "#000000", // Apply different border colors per slice
+          optionBorderColor: "#000000",
           borderWidth:0
         }
       ]
