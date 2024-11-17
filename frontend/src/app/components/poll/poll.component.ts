@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, QueryList, ViewChildren} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PollService } from '../../services/poll.service';
 import { CommonModule } from '@angular/common';
@@ -35,6 +35,8 @@ export class PollComponent implements OnInit, OnDestroy {
   };
 
 
+  @ViewChildren(BaseChartDirective) charts!: QueryList<BaseChartDirective>;
+
   constructor(
     private route: ActivatedRoute,
     private pollService: PollService,
@@ -64,7 +66,6 @@ export class PollComponent implements OnInit, OnDestroy {
 
 
   initializeChartData() {
-
     const COLORS = ['#DB3A34', '#177E89', '#FFC857', '#ADEEE3', '#9966FF', '#0F162B'];
     this.pieChartData = this.poll.questions.map((question: any) => ({
       labels: question.options.map((option: any) => option.text),
@@ -97,7 +98,8 @@ export class PollComponent implements OnInit, OnDestroy {
     this.pollService.getUpdatedVoteCounts(this.poll.id).subscribe({
       next: (updatedCounts) => {
         this.updateVoteCounts(updatedCounts);
-        this.initializeChartData();
+        this.updateChartData();
+
         this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
           next: (votes) => {
             this.highlightUserVotes(votes);
@@ -107,6 +109,22 @@ export class PollComponent implements OnInit, OnDestroy {
       error: () => {
         this.errorMessage = 'Failed to load updated vote data';
       }
+    });
+  }
+
+  private updateChartData() {
+    // Update the chart data
+    this.pieChartData.forEach((chartData: any, questionIndex: number) => {
+      const question = this.poll.questions[questionIndex];
+      question.options.forEach((option: any, optionIndex: number) => {
+        const dataset = chartData.datasets[0];
+        dataset.data[optionIndex] = option.votes.length;
+      });
+    });
+
+    // Force update each chart
+    this.charts.forEach((chart) => {
+      chart.update(); // This triggers the Chart.js library to re-render
     });
   }
 
@@ -127,7 +145,6 @@ export class PollComponent implements OnInit, OnDestroy {
     this.pollService.vote(this.userEmail, optionId).subscribe({
       next: () => {
         this.toastr.success('Vote recorded!');
-
         this.pollService.getVotesByEmailAndPollId(this.userEmail, this.poll.id).subscribe({
           next: (votes) => {
             this.highlightUserVotes(votes);
@@ -140,23 +157,6 @@ export class PollComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-
-
-  /*private toggleVoteCount(optionId: number) {
-    const option = this.poll.questions
-      .flatMap((q: any) => q.options)
-      .find((o: any) => o.id === optionId);
-
-    if (option) {
-      const existingVoteIndex = option.votes.findIndex((vote: any) => vote.userEmail === this.userEmail);
-      if (existingVoteIndex > -1) {
-        option.votes.splice(existingVoteIndex, 1);
-      } else {
-        option.votes.push({ userEmail: this.userEmail });
-      }
-    }
-  }*/
 
   private highlightUserVotes(votes: any[]) {
     this.poll.questions.forEach((question: any) => {
