@@ -1,4 +1,4 @@
-package zhaw.voter;
+package zhaw.voter.pollService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,9 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 import zhaw.voter.model.Poll;
-import zhaw.voter.repository.OptionRepository;
 import zhaw.voter.repository.PollRepository;
-import zhaw.voter.repository.QuestionRepository;
 import zhaw.voter.service.PollService;
 
 import java.util.ArrayList;
