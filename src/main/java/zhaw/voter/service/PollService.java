@@ -52,10 +52,6 @@ public class PollService {
         Optional<Poll> existingPollOpt = pollRepository.findById(poll.getId());
         if (existingPollOpt.isPresent()) {
             Poll existingPoll = existingPollOpt.get();
-
-            // Clear the existing list, then add all new questions
-            existingPoll.setActive(poll.getActive());
-
             existingPoll.getQuestions().clear();
             existingPoll.getQuestions().addAll(poll.getQuestions());
             existingPoll.setActive(poll.getActive());
@@ -156,7 +152,6 @@ public class PollService {
         }
 
         try {
-            //save the file with timestamp
             FileWriter csvWriter = new FileWriter("src/main/resources/dump/exportedPolls/pollResults_" + System.currentTimeMillis() + ".csv");
             csvWriter.append(csvBuilder.toString());
             csvWriter.flush();
