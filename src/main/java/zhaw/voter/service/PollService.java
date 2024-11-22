@@ -24,7 +24,6 @@ import java.util.*;
 @Service
 public class PollService {
 
-
     @Autowired
     private PollRepository pollRepository;
 
@@ -70,7 +69,6 @@ public class PollService {
         }
     }
 
-
     public List<Poll> getAllPolls() {
         List<Poll> polls = pollRepository.findAll();
         if (polls.isEmpty()) {
@@ -102,7 +100,6 @@ public class PollService {
         }
         return poll;
     }
-
 
     public Poll findPollByTokenAndPasswordAndEmail(String token, String password, String email) {
         if (token == null || token.trim().isEmpty()) {

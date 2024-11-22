@@ -1,6 +1,5 @@
 package zhaw.voter.controller;
 
-import org.apache.coyote.Response;
 import org.springframework.http.*;
 import org.springframework.web.multipart.MultipartFile;
 import zhaw.voter.dto.QuestionDTO;
@@ -21,7 +20,7 @@ import java.util.Objects;
 public class PollController {
 
     @Autowired
-    private PollService pollService;
+    PollService pollService;
 
     @GetMapping("/all")
     public ResponseEntity<?> getAllPolls() {
