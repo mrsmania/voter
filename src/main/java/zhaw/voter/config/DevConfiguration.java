@@ -1,6 +1,7 @@
 package zhaw.voter.config;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import zhaw.voter.model.Poll;
@@ -8,6 +9,7 @@ import zhaw.voter.model.Option;
 import zhaw.voter.model.Question;
 import zhaw.voter.model.Vote;
 import zhaw.voter.repository.PollRepository;
+import zhaw.voter.service.PollService;
 import zhaw.voter.util.HasLogger;
 
 import java.util.ArrayList;
@@ -19,6 +21,9 @@ public class DevConfiguration implements HasLogger {
 
     private final PollRepository pollRepository;
 
+    @Autowired
+    private PollService pollService;
+
     public DevConfiguration(PollRepository pollRepository) {
         this.pollRepository = pollRepository;
         getLogger().info("*****YOU ARE IN DEV PROFILE*****");
@@ -26,11 +31,7 @@ public class DevConfiguration implements HasLogger {
 
     @PostConstruct
     public void init() {
-        Poll poll = new Poll();
-        poll.setHostUserEmail("devuser@voter.test");
-        poll.setActive(true);
-        poll.setToken("AAAAAA");
-        poll.setPassword("111111");
+        Poll poll = pollService.createDemoPoll("devuser@voter.test", true, "111111", "AAAAAA");
 
         Option option1Q1 = new Option();
         option1Q1.setText("Rot");

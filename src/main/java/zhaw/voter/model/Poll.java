@@ -14,7 +14,7 @@ public class Poll {
     private Long id;
 
     private String token;
-    private String password = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+    private String password;
 
 
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
