@@ -22,8 +22,6 @@ public class VoteService {
     private final VoteRepository voteRepository;
     private final OptionRepository optionRepository;
 
-    private List<Vote> test;
-
     @Autowired
     public VoteService(VoteRepository voteRepository, OptionRepository optionRepository) {
         this.voteRepository = voteRepository;
@@ -65,12 +63,10 @@ public class VoteService {
         return voteRepository.findAllByUserEmailAndPollId(userEmail, pollId);
     }
 
-
     public List<VoteCountDTO> getUpdatedVoteCounts(Long pollId) {
         List<Option> options = optionRepository.findByPollId(pollId);
         return options.stream()
                 .map(option -> new VoteCountDTO(option.getId(), option.getVotes().size()))
                 .collect(Collectors.toList());
     }
-
 }
