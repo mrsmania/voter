@@ -7,13 +7,9 @@ import zhaw.voter.model.Poll;
 import zhaw.voter.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 
 @RestController
 @RequestMapping("/api/poll")
@@ -23,96 +19,56 @@ public class PollController {
     PollService pollService;
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllPolls() {
-        try {
-            List<Poll> polls = pollService.getAllPolls();
-            return ResponseEntity.ok(polls);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
+    public ResponseEntity<List<Poll>> getAllPolls() {
+        List<Poll> polls = pollService.getAllPolls();
+        return ResponseEntity.ok(polls);
     }
 
     @GetMapping("/tokens")
-    public ResponseEntity<?> getAllTokens() {
-        try {
-            List<String> tokens = pollService.getAllTokens();
-            return ResponseEntity.ok(tokens);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
+    public ResponseEntity<List<String>> getAllTokens() {
+        List<String> tokens = pollService.getAllTokens();
+        return ResponseEntity.ok(tokens);
     }
 
     @GetMapping("/{token}")
-    public ResponseEntity<?> getPollByToken(@PathVariable String token) {
-        try {
-            Poll poll = pollService.getPollByToken(token);
-            return ResponseEntity.ok(poll);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
+    public ResponseEntity<Poll> getPollByToken(@PathVariable String token) {
+        Poll poll = pollService.getPollByToken(token);
+        return ResponseEntity.ok(poll);
     }
 
     @GetMapping("/{token}/export")
     public ResponseEntity<byte[]> exportPollResults(@PathVariable String token) {
-        try {
-            String csvData = pollService.generatePollResultsCSV(token);
-            byte[] csvBytes = csvData.getBytes();
+        String csvData = pollService.generatePollResultsCSV(token);
+        byte[] csvBytes = csvData.getBytes();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("poll-results.csv").build());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename("poll-results.csv").build());
 
-            return ResponseEntity.ok().headers(headers).body(csvBytes);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(null);
-        }
+        return ResponseEntity.ok().headers(headers).body(csvBytes);
     }
 
     @PostMapping("/upload-questions")
-    public ResponseEntity<?> uploadQuestions(@RequestParam("file") MultipartFile file) {
-        try {
-            List<QuestionDTO> questions = pollService.verifyAndParseQuestions(file);
-            return ResponseEntity.ok(questions);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid file format"));
-        }
+    public ResponseEntity<List<QuestionDTO>> uploadQuestions(@RequestParam("file") MultipartFile file) throws IOException {
+        List<QuestionDTO> questions = pollService.verifyAndParseQuestions(file);
+        return ResponseEntity.ok(questions);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> savePoll(@RequestBody Poll poll) {
-        try {
-            Poll savedPoll = pollService.savePoll(poll);
-            return ResponseEntity.ok(savedPoll);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
+    public ResponseEntity<Poll> savePoll(@RequestBody Poll poll) {
+        Poll savedPoll = pollService.savePoll(poll);
+        return ResponseEntity.ok(savedPoll);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createPoll(@RequestParam String hostUserEmail) {
-        try {
-            Poll poll = pollService.createPoll(hostUserEmail);
-            return ResponseEntity.ok(poll);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-
+    public ResponseEntity<Poll> createPoll(@RequestParam String hostUserEmail) {
+        Poll poll = pollService.createPoll(hostUserEmail);
+        return ResponseEntity.ok(poll);
     }
 
     @GetMapping
-    public ResponseEntity<?> getPoll(@RequestParam String token, @RequestParam String password, @RequestParam String email) {
-        try {
-            Poll poll = pollService.findPollByTokenAndPasswordAndEmail(token, password, email);
-            return ResponseEntity.ok(poll);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
+    public ResponseEntity<Poll> getPoll(@RequestParam String token, @RequestParam String password, @RequestParam String email) {
+        Poll poll = pollService.findPollByTokenAndPasswordAndEmail(token, password, email);
+        return ResponseEntity.ok(poll);
     }
-
 }

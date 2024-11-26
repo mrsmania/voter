@@ -33,7 +33,7 @@ public class PollService {
     @Autowired
     private OptionRepository optionRepository;
 
-    public Poll initializePoll(String hostUserEmail, boolean isActive, String password, String token) {
+    public Poll initPoll(String hostUserEmail, boolean isActive, String password, String token) {
         EmailValidator.validate(hostUserEmail);
         Poll poll = new Poll();
         poll.setHostUserEmail(hostUserEmail);
@@ -44,7 +44,7 @@ public class PollService {
     }
 
     public Poll createDemoPoll(String hostUserEmail, boolean isActive, String password, String token) {
-        return initializePoll(hostUserEmail, isActive, password, token);
+        return initPoll(hostUserEmail, isActive, password, token);
     }
 
     public Poll createPoll(String hostUserEmail) {
@@ -53,7 +53,7 @@ public class PollService {
         do {
             token = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
         } while (pollRepository.existsByToken(token));
-        Poll poll = initializePoll(hostUserEmail, false, password, token);
+        Poll poll = initPoll(hostUserEmail, false, password, token);
         return pollRepository.save(poll);
     }
 
