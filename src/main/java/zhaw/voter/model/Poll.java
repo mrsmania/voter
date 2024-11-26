@@ -16,7 +16,6 @@ public class Poll {
     private String token;
     private String password;
 
-
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Question> questions = new ArrayList<>();
@@ -32,13 +31,8 @@ public class Poll {
         this.password = password;
     }
 
-
     public boolean getActive() { // Use getActive() instead of isActive()
         return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public String getHostUserEmail() {
@@ -88,5 +82,9 @@ public class Poll {
 
     public boolean isActive() {
         return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Option{
+public class Option {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,6 +23,12 @@ public class Option{
     @JsonBackReference
     private Question question;
 
+    public Option() {
+    }
+
+    public Option(String text) {
+        this.text = text;
+    }
 
     public Long getId() {
         return id;
@@ -46,6 +52,11 @@ public class Option{
 
     public void setVotes(List<Vote> votes) {
         this.votes = votes;
+    }
+
+    public void addVote(Vote vote) {
+        this.votes.add(vote);
+        vote.setOption(this);
     }
 
     public void removeVote(Vote vote) {

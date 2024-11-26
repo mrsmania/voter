@@ -33,62 +33,37 @@ public class DevConfiguration implements HasLogger {
     public void init() {
         Poll poll = pollService.createDemoPoll("devuser@voter.test", true, "111111", "AAAAAA");
 
-        Question question = new Question();
-        question.setText("Lieblingsfarbe?");
-        question.setMultipleChoice(false);
-        question.setPoll(poll);
-        Question question2 = new Question();
-        question2.setText("Best movie trilogy of all times?");
-        question2.setMultipleChoice(false);
-        question2.setPoll(poll);
+        Question question1 = new Question("Whats your favourite color?", false);
+        Question question2 = new Question("Best movie trilogy of all times?", false);
 
-        Option option1Q1 = new Option();
-        option1Q1.setText("Rot");
-        Option option2Q1 = new Option();
-        option2Q1.setText("Gelb");
-        Option option3Q1 = new Option();
-        option3Q1.setText("Blau");
-        List<Option> optionsQ1 = new ArrayList<>();
-        optionsQ1.add(option1Q1);
-        optionsQ1.add(option2Q1);
-        optionsQ1.add(option3Q1);
+        Option option1Q1 = new Option("Red");
+        Option option2Q1 = new Option("Yellow");
+        Option option3Q1 = new Option("Blue");
+        Option option1Q2 = new Option("Lord of the Rings");
+        Option option2Q2 = new Option("The Godfather");
+        Option option3Q2 = new Option("The Dark Knight");
+        Option option4Q2 = new Option("The Matrix");
 
-        Vote vote1 = new Vote();
-        vote1.setOption(option1Q1);
-        vote1.setUserEmail("test@voter.test");
-        Vote vote2 = new Vote();
-        vote2.setOption(option1Q1);
-        vote2.setUserEmail("test@voter.test");
-        Vote vote3 = new Vote();
-        vote3.setOption(option1Q1);
-        vote3.setUserEmail("test@voter.test");
-        List<Vote> votesQ1 = new ArrayList<>();
-        votesQ1.add(vote1);
-        votesQ1.add(vote2);
-        votesQ1.add(vote3);
-        option3Q1.setVotes(votesQ1);
+        Vote vote1 = new Vote("test@test.ch");
+        Vote vote2 = new Vote("earth@plantes.ch");
+        Vote vote3 = new Vote("tree@plants.ch");
+        Vote vote4 = new Vote("hello@words.ch");
 
-        Option option1Q2 = new Option();
-        option1Q2.setText("Lord of the Rings");
-        Option option2Q2 = new Option();
-        option2Q2.setText("The Godfather");
-        Option option3Q2 = new Option();
-        option3Q2.setText("The Dark Knight");
-        Option option4Q2 = new Option();
-        option4Q2.setText("The Matrix");
-        List<Option> optionsQ2 = new ArrayList<>();
-        optionsQ2.add(option1Q2);
-        optionsQ2.add(option2Q2);
-        optionsQ2.add(option3Q2);
-        optionsQ2.add(option4Q2);
+        option3Q1.addVote(vote1);
+        option3Q1.addVote(vote2);
+        option3Q1.addVote(vote3);
+        option2Q1.addVote(vote4);
 
-        question.setOptions(optionsQ1);
-        question2.setOptions(optionsQ2);
+        question1.addOption(option1Q1);
+        question1.addOption(option2Q1);
+        question1.addOption(option3Q1);
+        question2.addOption(option1Q2);
+        question2.addOption(option2Q2);
+        question2.addOption(option3Q2);
+        question2.addOption(option4Q2);
 
-        List<Question> questions = new ArrayList<>();
-        questions.add(question);
-        questions.add(question2);
-        poll.setQuestions(questions);
+        poll.addQuestion(question1);
+        poll.addQuestion(question2);
 
         pollRepository.save(poll);
     }
