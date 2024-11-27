@@ -170,7 +170,6 @@ public class PollService {
 
         return csvBuilder.toString();
     }
-
     public List<QuestionDTO> verifyAndParseQuestions(MultipartFile file) throws IOException {
         List<QuestionDTO> questions = new ArrayList<>();
 

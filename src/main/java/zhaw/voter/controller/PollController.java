@@ -48,12 +48,6 @@ public class PollController {
         return ResponseEntity.ok().headers(headers).body(csvBytes);
     }
 
-    @PostMapping("/upload-questions")
-    public ResponseEntity<List<QuestionDTO>> uploadQuestions(@RequestParam("file") MultipartFile file) throws IOException {
-        List<QuestionDTO> questions = pollService.verifyAndParseQuestions(file);
-        return ResponseEntity.ok(questions);
-    }
-
     @PostMapping("/save")
     public ResponseEntity<Poll> savePoll(@RequestBody Poll poll) {
         Poll savedPoll = pollService.savePoll(poll);
@@ -70,5 +64,11 @@ public class PollController {
     public ResponseEntity<Poll> getPoll(@RequestParam String token, @RequestParam String password, @RequestParam String email) {
         Poll poll = pollService.findPollByTokenAndPasswordAndEmail(token, password, email);
         return ResponseEntity.ok(poll);
+    }
+
+    @PostMapping("/upload-questions")
+    public ResponseEntity<List<QuestionDTO>> uploadQuestions(@RequestParam("file") MultipartFile file) throws IOException {
+        List<QuestionDTO> questions = pollService.verifyAndParseQuestions(file);
+        return ResponseEntity.ok(questions);
     }
 }
