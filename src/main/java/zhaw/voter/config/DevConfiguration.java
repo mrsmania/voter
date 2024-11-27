@@ -48,11 +48,17 @@ public class DevConfiguration implements HasLogger {
         Vote vote2 = new Vote("earth@plantes.ch");
         Vote vote3 = new Vote("tree@plants.ch");
         Vote vote4 = new Vote("hello@words.ch");
+        Vote vote5 = new Vote("goodbye@words.ch");
+        Vote vote6 = new Vote("whatsup@words.ch");
+        Vote vote7 = new Vote("hi@words.ch");
 
         option3Q1.addVote(vote1);
         option3Q1.addVote(vote2);
         option3Q1.addVote(vote3);
         option2Q1.addVote(vote4);
+        option1Q1.addVote(vote5);
+        option1Q1.addVote(vote6);
+        option3Q1.addVote(vote7);
 
         question1.addOption(option1Q1);
         question1.addOption(option2Q1);

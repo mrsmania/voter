@@ -1,14 +1,11 @@
 package zhaw.voter.controller;
 
 import org.springframework.http.*;
-import org.springframework.web.multipart.MultipartFile;
-import zhaw.voter.dto.QuestionDTO;
 import zhaw.voter.model.Poll;
 import zhaw.voter.service.PollService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -48,12 +45,6 @@ public class PollController {
         return ResponseEntity.ok().headers(headers).body(csvBytes);
     }
 
-    @PostMapping("/upload-questions")
-    public ResponseEntity<List<QuestionDTO>> uploadQuestions(@RequestParam("file") MultipartFile file) throws IOException {
-        List<QuestionDTO> questions = pollService.verifyAndParseQuestions(file);
-        return ResponseEntity.ok(questions);
-    }
-
     @PostMapping("/save")
     public ResponseEntity<Poll> savePoll(@RequestBody Poll poll) {
         Poll savedPoll = pollService.savePoll(poll);
@@ -71,4 +62,5 @@ public class PollController {
         Poll poll = pollService.findPollByTokenAndPasswordAndEmail(token, password, email);
         return ResponseEntity.ok(poll);
     }
+
 }
