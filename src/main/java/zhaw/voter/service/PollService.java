@@ -29,27 +29,18 @@ public class PollService {
     @Autowired
     private OptionRepository optionRepository;
 
-    public Poll initPoll(String hostUserEmail, boolean isActive, String password, String token) {
-        EmailValidator.validate(hostUserEmail);
-        Poll poll = new Poll();
-        poll.setHostUserEmail(hostUserEmail);
-        poll.setActive(isActive);
-        poll.setPassword(password);
-        poll.setToken(token);
-        return poll;
-    }
-
-    public Poll createDemoPoll(String hostUserEmail, boolean isActive, String password, String token) {
-        return initPoll(hostUserEmail, isActive, password, token);
-    }
-
     public Poll createPoll(String hostUserEmail) {
+        EmailValidator.validate(hostUserEmail);
         String password = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
         String token;
         do {
             token = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
         } while (pollRepository.existsByToken(token));
-        Poll poll = initPoll(hostUserEmail, false, password, token);
+        Poll poll = new Poll();
+        poll.setHostUserEmail(hostUserEmail);
+        poll.setActive(false);
+        poll.setPassword(password);
+        poll.setToken(token);
         return pollRepository.save(poll);
     }
 

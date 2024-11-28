@@ -10,6 +10,7 @@ import zhaw.voter.model.Question;
 import zhaw.voter.model.Vote;
 import zhaw.voter.repository.PollRepository;
 import zhaw.voter.service.PollService;
+import zhaw.voter.service.QuestionService;
 import zhaw.voter.util.HasLogger;
 
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class DevConfiguration implements HasLogger {
 
     @Autowired
     private PollService pollService;
+    @Autowired
+    private QuestionService questionService;
 
     public DevConfiguration(PollRepository pollRepository) {
         this.pollRepository = pollRepository;
@@ -31,7 +34,7 @@ public class DevConfiguration implements HasLogger {
 
     @PostConstruct
     public void init() {
-        Poll poll = pollService.createDemoPoll("devuser@voter.test", true, "111111", "AAAAAA");
+        Poll poll = new Poll("devuser@voter.test", true, "AAAAAA", "111111");
 
         Question question1 = new Question("Whats your favourite color?", false);
         Question question2 = new Question("Best movie trilogy of all times?", false);
