@@ -23,6 +23,15 @@ public class Poll {
     private String hostUserEmail;
     private boolean active = false;
 
+    public Poll() {}
+
+    public Poll(String hostUserEmail, boolean active, String token, String password) {
+        this.hostUserEmail = hostUserEmail;
+        this.active = active;
+        this.token = token;
+        this.password = password;
+    }
+
     public String getPassword() {
         return password;
     }
