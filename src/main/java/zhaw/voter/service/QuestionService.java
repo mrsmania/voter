@@ -1,10 +1,12 @@
 package zhaw.voter.service;
 
-import org.springframework.http.HttpStatus;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import zhaw.voter.dto.QuestionDTO;
+import zhaw.voter.model.Question;
+import zhaw.voter.repository.QuestionRepository;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,15 +18,42 @@ import java.util.List;
 @Service
 public class QuestionService {
 
+    private final QuestionRepository questionRepository;
+
+    public QuestionService(QuestionRepository questionRepository) {
+        this.questionRepository = questionRepository;
+    }
+
+    public List<Question> getAllQuestions() {
+        return questionRepository.findAll();
+    }
+
+    public Question createQuestion(String text, boolean multipleChoice) {
+        if (text == null || text.trim().isEmpty()) {
+            throw new IllegalArgumentException("Question text cannot be empty");
+        }
+        Question question = new Question();
+        question.setText(text);
+        question.setMultipleChoice(multipleChoice);
+        return questionRepository.save(question);
+    }
+
+    public void deleteQuestion(long questionId) {
+        try {
+            questionRepository.deleteById(questionId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Question with id " + questionId + " not found");
+        }
+    }
+
     public List<QuestionDTO> verifyAndParseQuestions(MultipartFile file) throws IOException {
         List<QuestionDTO> questions = new ArrayList<>();
-
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] values = line.split(";");
                 if (values.length < 3) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Each question must have at least two options");
+                    throw new IllegalArgumentException("Each question must have at least two options");
                 }
                 QuestionDTO question = new QuestionDTO();
                 question.setText(values[0]);
@@ -32,11 +61,36 @@ public class QuestionService {
                 questions.add(question);
             }
         }
-
         if (questions.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The file contains no questions");
+            throw new IllegalArgumentException("The file contains no questions");
         }
-
         return questions;
+    }
+
+    public List<Long> getAllQuestionIds() {
+        List<Question> questions = questionRepository.findAll();
+        if (questions.isEmpty()) {
+            throw new EntityNotFoundException("No questions found");
+        }
+        List<Long> questionIds = new ArrayList<>();
+        for (Question question : questions) {
+            questionIds.add(question.getId());
+        }
+        return questionIds;
+    }
+
+    public Question findQuestion(long questionId) {
+        return questionRepository.findById(questionId).orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
+    }
+
+    public Question updateQuestion(long questionId, Question updatedQuestion) {
+        if (updatedQuestion == null || updatedQuestion.getText().trim().isEmpty()) {
+            throw new IllegalArgumentException("Question text cannot be empty");
+        }
+        Question existingQuestion = questionRepository.findById(questionId).orElseThrow(() ->
+                new EntityNotFoundException("Question with id " + questionId + " not found"));
+        existingQuestion.setText(updatedQuestion.getText());
+        existingQuestion.setMultipleChoice(updatedQuestion.getMultipleChoice());
+        return questionRepository.save(existingQuestion);
     }
 }
