@@ -17,7 +17,12 @@ public class Vote {
     @JoinColumn(name = "OPTION_ID")
     private Option option;
 
-    public Vote() {}
+    public Vote() {
+    }
+
+    public Vote(String userEmail) {
+        this.userEmail = userEmail;
+    }
 
     public Vote(String userEmail, Option option) {
         this.userEmail = userEmail;

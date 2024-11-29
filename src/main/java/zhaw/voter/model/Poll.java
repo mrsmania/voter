@@ -14,8 +14,7 @@ public class Poll {
     private Long id;
 
     private String token;
-    private String password = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-
+    private String password;
 
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
@@ -23,6 +22,15 @@ public class Poll {
 
     private String hostUserEmail;
     private boolean active = false;
+
+    public Poll() {}
+
+    public Poll(String hostUserEmail, boolean active, String token, String password) {
+        this.hostUserEmail = hostUserEmail;
+        this.active = active;
+        this.token = token;
+        this.password = password;
+    }
 
     public String getPassword() {
         return password;
@@ -32,13 +40,8 @@ public class Poll {
         this.password = password;
     }
 
-
     public boolean getActive() { // Use getActive() instead of isActive()
         return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 
     public String getHostUserEmail() {
@@ -88,5 +91,9 @@ public class Poll {
 
     public boolean isActive() {
         return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

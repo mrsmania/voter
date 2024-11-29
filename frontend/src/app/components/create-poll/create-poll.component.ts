@@ -4,6 +4,7 @@ import {QuestionComponent} from './forms/question/question.component';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import {StateComponent} from './forms/state/state.component';
 import {PollService} from '../../services/poll.service';
+import {QuestionService} from '../../services/question.service';
 import {ToastrService} from 'ngx-toastr';
 import {FormsModule} from '@angular/forms';
 import {UpdatePollCredentialsComponent} from './forms/update-poll-credentials/update-poll-credentials.component';
@@ -42,7 +43,7 @@ export class CreatePollComponent {
   @ViewChildren(QuestionComponent) questionComponents!: QueryList<QuestionComponent>;
   @ViewChildren(StateComponent) stateComponent!: QueryList<StateComponent>;
 
-  constructor(private pollService: PollService, private toastr: ToastrService) {}
+  constructor(private pollService: PollService, private questionService: QuestionService, private toastr: ToastrService) {}
 
   onUsernameSubmitted(response: any) {
     this.showQuestions = true;
@@ -183,7 +184,7 @@ export class CreatePollComponent {
     const formData = new FormData();
     formData.append('file', file);
 
-    this.pollService.uploadQuestions(formData).subscribe({
+    this.questionService.uploadQuestions(formData).subscribe({
       next: (questions: any[]) => {
         this.toastr.success('Questions uploaded successfully');
         this.questions = this.questions.filter(q => q.text.trim() !== '' || q.options.some((o: string) => o.trim() !== ''));
@@ -196,7 +197,5 @@ export class CreatePollComponent {
       },
     });
   }
-
-
 }
 

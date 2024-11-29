@@ -19,7 +19,6 @@ public class Question {
     @JsonManagedReference
     private List<Option> options = new ArrayList<>();
 
-
     private Boolean multipleChoice;
 
     @ManyToOne
@@ -27,6 +26,13 @@ public class Question {
     @JsonBackReference
     private Poll poll;
 
+    public Question() {
+    }
+
+    public Question(String text, Boolean multipleChoice) {
+        this.text = text;
+        this.multipleChoice = multipleChoice;
+    }
 
     public Long getId() {
         return id;
@@ -72,7 +78,6 @@ public class Question {
     public void setPoll(Poll poll) {
         this.poll = poll;
     }
-
 
     public Boolean getMultipleChoice() {
         return multipleChoice;

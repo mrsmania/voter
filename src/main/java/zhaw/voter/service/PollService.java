@@ -1,7 +1,7 @@
 package zhaw.voter.service;
 
-import org.springframework.web.multipart.MultipartFile;
-import zhaw.voter.dto.QuestionDTO;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import zhaw.voter.model.Option;
 import zhaw.voter.model.Question;
 import zhaw.voter.model.Poll;
@@ -9,145 +9,120 @@ import zhaw.voter.repository.PollRepository;
 import zhaw.voter.repository.QuestionRepository;
 import zhaw.voter.repository.OptionRepository;
 import zhaw.voter.util.EmailValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import zhaw.voter.util.InputValidator;
 
-import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
-
+import java.util.stream.Collectors;
 
 @Service
 public class PollService {
 
-    @Autowired
-    private PollRepository pollRepository;
+    private final PollRepository pollRepository;
+    private final QuestionRepository questionRepository;
+    private final OptionRepository optionRepository;
 
-    @Autowired
-    private QuestionRepository questionRepository;
+    public PollService(PollRepository pollRepository, QuestionRepository questionRepository, OptionRepository optionRepository) {
+        this.pollRepository = pollRepository;
+        this.questionRepository = questionRepository;
+        this.optionRepository = optionRepository;
+    }
 
-    @Autowired
-    private OptionRepository optionRepository;
+    public List<Poll> getAllPolls() {
+        return extractAllPolls();
+    }
 
     public Poll createPoll(String hostUserEmail) {
         EmailValidator.validate(hostUserEmail);
         Poll poll = new Poll();
         poll.setHostUserEmail(hostUserEmail);
         poll.setActive(false);
-        String token;
-        do {
-            token = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-        } while (pollRepository.existsByToken(token));
-        poll.setToken(token);
+        poll.setPassword(generateRandomString());
+        poll.setToken(generateUniqueToken());
         return pollRepository.save(poll);
     }
 
-    public Poll savePoll(Poll poll) {
-        validatePoll(poll);
-        Optional<Poll> existingPollOpt = pollRepository.findById(poll.getId());
-        if (existingPollOpt.isPresent()) {
-            Poll existingPoll = existingPollOpt.get();
-            existingPoll.getQuestions().clear();
-            existingPoll.getQuestions().addAll(poll.getQuestions());
-            existingPoll.setActive(poll.getActive());
-
-            for (Question question : existingPoll.getQuestions()) {
-                optionRepository.saveAll(question.getOptions());
-                questionRepository.save(question);
-            }
-            return pollRepository.save(existingPoll);
-        } else {
-            throw new RuntimeException("Poll with ID " + poll.getId() + " does not exist.");
-        }
-    }
-
-    public List<Poll> getAllPolls() {
-        List<Poll> polls = pollRepository.findAll();
-        if (polls.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No polls found.");
-        }
-        return polls;
-    }
-
-    public List<String> getAllTokens() {
-        List<Poll> polls = pollRepository.findAll();
-        if (polls.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No polls found.");
-        }
-        List<String> tokens = new ArrayList<>();
-        for (Poll poll : polls) {
-            tokens.add(poll.getToken());
-        }
-        return tokens;
-    }
-
     public Poll getPollByToken(String token) {
-        Optional<Poll> optionalPoll = pollRepository.findByToken(token);
-        if (optionalPoll.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Poll not found.");
-        }
-        Poll poll = optionalPoll.get();
+        Poll poll = pollRepository.findByToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Poll not found."));
         if (!poll.getActive()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Poll is inactive.");
         }
         return poll;
     }
 
-    public Poll findPollByTokenAndPasswordAndEmail(String token, String password, String email) {
-        if (token == null || token.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token is required.");
-        }
-        if (password == null || password.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required.");
-        }
-        if (email == null || email.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required.");
-        }
+    public Poll savePoll(Poll poll) {
+        Poll existingPoll = pollRepository.findById(
+                Optional.ofNullable(poll.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Poll id cannot be null"))
+        ).orElseThrow(() -> new EntityNotFoundException("Poll with id " + poll.getId() + " not found"));
+        validatePoll(existingPoll);
+        existingPoll.getQuestions().clear();
+        existingPoll.getQuestions().addAll(poll.getQuestions());
+        existingPoll.setActive(poll.getActive());
+
+        existingPoll.getQuestions().forEach(question -> {
+            optionRepository.saveAll(question.getOptions());
+            questionRepository.save(question);
+        });
+        return pollRepository.save(existingPoll);
+    }
+
+    public void deletePoll(long pollId) {
         try {
-            return pollRepository.findByTokenAndPasswordAndHostUserEmail(token, password, email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found or access denied"));
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Poll not found or access denied");
+            pollRepository.deleteById(pollId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Poll with id " + pollId + " not found");
         }
     }
 
-    private void validatePoll(Poll poll) {
-        if (poll.getQuestions().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The poll must have at least one question.");
+    public List<Long> getAllPollIds() {
+        return extractAllPolls()
+                .stream()
+                .map(Poll::getId)
+                .collect(Collectors.toList());
+    }
+
+    public List<String> getAllTokens() {
+        return extractAllPolls()
+                .stream()
+                .map(Poll::getToken)
+                .collect(Collectors.toList());
+    }
+
+    public Poll addQuestion(long pollId, long questionId) {
+        Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException("Poll with id " + pollId + " not found"));
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
+        poll.addQuestion(question);
+        question.setPoll(poll);
+        return pollRepository.save(poll);
+    }
+
+    public void removeQuestion(long pollId, long questionId) {
+        Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException("Poll with id " + pollId + " not found"));
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
+        if (!poll.getQuestions().contains(question)) {
+            throw new IllegalArgumentException("Question with id " + questionId + " is not part of Poll with id " + pollId);
         }
-
-        for (Question question : poll.getQuestions()) {
-            if (question.getText() == null || question.getText().trim().isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You cannot have a question with empty text.");
-            }
-
-            if (question.getOptions().size() < 2) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Each question must have at least two options.");
-            }
-
-            for (Option option : question.getOptions()) {
-                if (option.getText() == null || option.getText().trim().isEmpty()) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Each option must have text.");
-                }
-            }
-        }
+        poll.getQuestions().remove(question);
+        question.setPoll(null);
+        pollRepository.save(poll);
+        questionRepository.save(question);
     }
 
     public String generatePollResultsCSV(String token) {
         Poll poll = getPollByToken(token);
-
         StringBuilder csvBuilder = new StringBuilder();
         csvBuilder.append("Poll;Question;Option;Vote Count\n");
-
         for (Question question : poll.getQuestions()) {
             for (Option option : question.getOptions()) {
                 csvBuilder.append(poll.getToken()).append(";").append(question.getText()).append(";").append(option.getText()).append(";").append(option.getVotes().size()).append("\n");
             }
         }
-
         try {
             FileWriter csvWriter = new FileWriter("src/main/resources/dump/exportedPolls/pollResults_" + System.currentTimeMillis() + ".csv");
             csvWriter.append(csvBuilder.toString());
@@ -156,31 +131,46 @@ public class PollService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return csvBuilder.toString();
     }
 
-    public List<QuestionDTO> verifyAndParseQuestions(MultipartFile file) throws IOException {
-        List<QuestionDTO> questions = new ArrayList<>();
+    public Poll findPollByTokenAndPasswordAndEmail(String token, String password, String email) {
+        InputValidator.validateInput(token, "Token is required");
+        InputValidator.validateInput(password, "Password is required");
+        InputValidator.validateInput(email, "Email is required");
+        return pollRepository.findByTokenAndPasswordAndHostUserEmail(token, password, email).orElseThrow(() -> new EntityNotFoundException("Poll not found or access denied"));
+    }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] values = line.split(";");
-                if (values.length < 3) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Each question must have at least two options");
-                }
-                QuestionDTO question = new QuestionDTO();
-                question.setText(values[0]);
-                question.setOptions(Arrays.asList(values).subList(1, values.length));
-                questions.add(question);
+    private List<Poll> extractAllPolls() {
+        List<Poll> polls = pollRepository.findAll();
+        if (polls.isEmpty()) {
+            throw new EntityNotFoundException("No polls found.");
+        }
+        return polls;
+    }
+
+    private void validatePoll(Poll poll) {
+        if (poll.getQuestions().isEmpty()) {
+            throw new IllegalArgumentException("The poll must have at least one question");
+        }
+        poll.getQuestions().forEach(question -> {
+            InputValidator.validateInput(question.getText(), "Question text cannot be empty");
+            if (question.getOptions().size() < 2) {
+                throw new IllegalArgumentException("Each question must have at least two options");
             }
-        }
+            question.getOptions().forEach(option -> InputValidator.validateInput(option.getText(), "Each option must have text"));
+        });
+    }
 
-        if (questions.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The file contains no questions");
-        }
+    private String generateRandomString() {
+        return UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+    }
 
-        return questions;
+    private String generateUniqueToken() {
+        String token;
+        do {
+            token = generateRandomString();
+        } while (pollRepository.existsByToken(token));
+        return token;
     }
 }

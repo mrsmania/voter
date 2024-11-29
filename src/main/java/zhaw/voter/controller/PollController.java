@@ -1,118 +1,80 @@
 package zhaw.voter.controller;
 
 import org.springframework.http.*;
-import org.springframework.web.multipart.MultipartFile;
-import zhaw.voter.dto.QuestionDTO;
 import zhaw.voter.model.Poll;
 import zhaw.voter.service.PollService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 
 @RestController
 @RequestMapping("/api/poll")
 public class PollController {
 
-    @Autowired
-    PollService pollService;
+    private final PollService pollService;
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllPolls() {
-        try {
-            List<Poll> polls = pollService.getAllPolls();
-            return ResponseEntity.ok(polls);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
+    public PollController(PollService pollService) {
+        this.pollService = pollService;
     }
 
-    @GetMapping("/tokens")
-    public ResponseEntity<?> getAllTokens() {
-        try {
-            List<String> tokens = pollService.getAllTokens();
-            return ResponseEntity.ok(tokens);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
+    @GetMapping("/all")
+    public ResponseEntity<List<Poll>> getAllPolls() {
+        return ResponseEntity.ok(pollService.getAllPolls());
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<Poll> createPoll(@RequestParam String hostUserEmail) {
+        return ResponseEntity.ok(pollService.createPoll(hostUserEmail));
     }
 
     @GetMapping("/{token}")
-    public ResponseEntity<?> getPollByToken(@PathVariable String token) {
-        try {
-            Poll poll = pollService.getPollByToken(token);
-            return ResponseEntity.ok(poll);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
+    public ResponseEntity<Poll> getPollByToken(@PathVariable String token) {
+        return ResponseEntity.ok(pollService.getPollByToken(token));
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<Poll> savePoll(@RequestBody Poll poll) {
+        return ResponseEntity.ok(pollService.savePoll(poll));
+    }
+
+    @DeleteMapping("/{pollId}")
+    public ResponseEntity<Void> deletePoll(@PathVariable long pollId) {
+        pollService.deletePoll(pollId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/poll-ids")
+    public ResponseEntity<List<Long>> getAllPollIds() {
+        return ResponseEntity.ok(pollService.getAllPollIds());
+    }
+
+    @GetMapping("/tokens")
+    public ResponseEntity<List<String>> getAllTokens() {
+        return ResponseEntity.ok(pollService.getAllTokens());
+    }
+
+    @PostMapping("/{pollId}/add-question/{questionId}")
+    public ResponseEntity<Poll> addQuestion(@PathVariable long pollId, @PathVariable long questionId) {
+        return ResponseEntity.ok(pollService.addQuestion(pollId, questionId));
+    }
+
+    @DeleteMapping("/{pollId}/remove-question/{questionId}")
+    public ResponseEntity<Void> removeQuestion(@PathVariable long pollId, @PathVariable long questionId) {
+        pollService.removeQuestion(pollId, questionId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{token}/export")
     public ResponseEntity<byte[]> exportPollResults(@PathVariable String token) {
-        try {
-            String csvData = pollService.generatePollResultsCSV(token);
-            byte[] csvBytes = csvData.getBytes();
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDisposition(ContentDisposition.builder("attachment").filename("poll-results.csv").build());
-
-            return ResponseEntity.ok().headers(headers).body(csvBytes);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(null);
-        }
-    }
-
-    @PostMapping("/upload-questions")
-    public ResponseEntity<?> uploadQuestions(@RequestParam("file") MultipartFile file) {
-        try {
-            List<QuestionDTO> questions = pollService.verifyAndParseQuestions(file);
-            return ResponseEntity.ok(questions);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        } catch (IOException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid file format"));
-        }
-    }
-
-    @PostMapping("/save")
-    public ResponseEntity<?> savePoll(@RequestBody Poll poll) {
-        try {
-            Poll savedPoll = pollService.savePoll(poll);
-            return ResponseEntity.ok(savedPoll);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
-        }
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<?> createPoll(@RequestParam String hostUserEmail) {
-        try {
-            Poll poll = pollService.createPoll(hostUserEmail);
-            return ResponseEntity.ok(poll);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-
+        byte[] csvBytes = pollService.generatePollResultsCSV(token).getBytes();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDisposition(ContentDisposition.builder("attachment").filename("poll-results.csv").build());
+        return ResponseEntity.ok().headers(headers).body(csvBytes);
     }
 
     @GetMapping
-    public ResponseEntity<?> getPoll(@RequestParam String token, @RequestParam String password, @RequestParam String email) {
-        try {
-            Poll poll = pollService.findPollByTokenAndPasswordAndEmail(token, password, email);
-            return ResponseEntity.ok(poll);
-        } catch (ResponseStatusException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(Map.of("message", Objects.requireNonNull(e.getReason())));
-        }
+    public ResponseEntity<Poll> getPoll(@RequestParam String token, @RequestParam String password, @RequestParam String email) {
+        return ResponseEntity.ok(pollService.findPollByTokenAndPasswordAndEmail(token, password, email));
     }
-
 }
