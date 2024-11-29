@@ -1,15 +1,14 @@
 import {Component, OnDestroy, OnInit, QueryList, ViewChildren} from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PollService } from '../../services/poll.service';
-import { CommonModule } from '@angular/common';
+import {ActivatedRoute, Router} from '@angular/router';
+import {PollService} from '../../services/poll.service';
+import {CommonModule} from '@angular/common';
 import {ToastrService} from 'ngx-toastr';
 import {FormsModule} from '@angular/forms';
 import {Stomp} from '@stomp/stompjs';
-import { BaseChartDirective } from 'ng2-charts';
+import {BaseChartDirective} from 'ng2-charts';
 import SockJS from 'sockjs-client';
 import {ChartData, ChartOptions} from 'chart.js';
 import {environment} from '../../../environments/environment';
-
 
 @Component({
   selector: 'app-poll',
@@ -40,7 +39,8 @@ export class PollComponent implements OnInit, OnDestroy {
     private pollService: PollService,
     private router: Router,
     private toastr: ToastrService,
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.connectWebSocket();
@@ -62,9 +62,8 @@ export class PollComponent implements OnInit, OnDestroy {
     });
   }
 
-
   initializeChartData() {
-    const COLORS = ['#DB3A34', '#177E89', '#FFC857', '#ADEEE3', '#9966FF', '#0F162B'];
+    const COLORS = ['#DB3A34', '#177E89', '#FFC857', '#ADEEE3', '#9966FF', '#0F162B', '#F4A261', '#2A9D8F', '#8A6D3B', '#E63946', '#FFB400', '#264653', '#6A0572', '#2B9348', '#F94144'];
     this.pieChartData = this.poll.questions.map((question: any) => ({
       labels: question.options.map((option: any) => option.text),
       datasets: [
@@ -72,7 +71,7 @@ export class PollComponent implements OnInit, OnDestroy {
           data: question.options.map((option: any) => option.votes.length),
           backgroundColor: COLORS.slice(0, question.options.length),
           optionBorderColor: "#000000",
-          borderWidth:0
+          borderWidth: 0
         }
       ]
     }));
@@ -90,7 +89,6 @@ export class PollComponent implements OnInit, OnDestroy {
       });
     });
   }
-
 
   private refreshVotes() {
     this.pollService.getUpdatedVoteCounts(this.poll.id).subscribe({
@@ -125,7 +123,6 @@ export class PollComponent implements OnInit, OnDestroy {
       chart.update(); // This triggers the Chart.js library to re-render
     });
   }
-
 
   private updateVoteCounts(updatedCounts: any) {
     updatedCounts.forEach((updatedCount: any) => {
@@ -164,7 +161,6 @@ export class PollComponent implements OnInit, OnDestroy {
     });
   }
 
-
   downloadCSV() {
     this.pollService.exportPollResults(this.poll.token).subscribe({
       next: (blob) => {
@@ -181,7 +177,6 @@ export class PollComponent implements OnInit, OnDestroy {
     });
   }
 
-
   ngOnDestroy() {
     if (this.stompClient) {
       this.stompClient.disconnect(() => {
@@ -189,6 +184,4 @@ export class PollComponent implements OnInit, OnDestroy {
       });
     }
   }
-
-
 }

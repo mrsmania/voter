@@ -9,23 +9,19 @@ import zhaw.voter.model.Option;
 import zhaw.voter.model.Question;
 import zhaw.voter.model.Vote;
 import zhaw.voter.repository.PollRepository;
-import zhaw.voter.service.PollService;
-import zhaw.voter.service.QuestionService;
 import zhaw.voter.util.HasLogger;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 @Configuration
 @Profile("dev")
 public class DevConfiguration implements HasLogger {
 
+    @Autowired
     private final PollRepository pollRepository;
-
-    @Autowired
-    private PollService pollService;
-    @Autowired
-    private QuestionService questionService;
 
     public DevConfiguration(PollRepository pollRepository) {
         this.pollRepository = pollRepository;
@@ -34,46 +30,99 @@ public class DevConfiguration implements HasLogger {
 
     @PostConstruct
     public void init() {
-        Poll poll = new Poll("devuser@voter.test", true, "AAAAAA", "111111");
+        List<Poll> polls = createDevPolls();
+        polls.forEach(this::generateRandomVotesForPoll);
+        pollRepository.saveAll(polls);
+    }
 
-        Question question1 = new Question("Whats your favourite color?", false);
-        Question question2 = new Question("Best movie trilogy of all times?", false);
+    private List<Poll> createDevPolls() {
+        Poll poll1 = initPoll("devuser1@voter.test", "AAAAAA", "111111");
+        Poll poll2 = initPoll("devuser1@voter.test", "000000", "111111");
 
-        Option option1Q1 = new Option("Red");
-        Option option2Q1 = new Option("Yellow");
-        Option option3Q1 = new Option("Blue");
-        Option option1Q2 = new Option("Lord of the Rings");
-        Option option2Q2 = new Option("The Godfather");
-        Option option3Q2 = new Option("The Dark Knight");
-        Option option4Q2 = new Option("The Matrix");
+        Question question1 = initQuestion("Favourite color?", false, poll1);
+        initOption("Red", question1);
+        initOption("Yellow", question1);
+        initOption("Blue", question1);
 
-        Vote vote1 = new Vote("test@test.ch");
-        Vote vote2 = new Vote("earth@plantes.ch");
-        Vote vote3 = new Vote("tree@plants.ch");
-        Vote vote4 = new Vote("hello@words.ch");
-        Vote vote5 = new Vote("goodbye@words.ch");
-        Vote vote6 = new Vote("whatsup@words.ch");
-        Vote vote7 = new Vote("hi@words.ch");
+        Question question2 = initQuestion("Favourite movie trilogy?", false, poll1);
+        initOption("Lord of the Rings", question2);
+        initOption("The Godfather", question2);
+        initOption("The Dark Knight", question2);
+        initOption("The Matrix", question2);
 
-        option3Q1.addVote(vote1);
-        option3Q1.addVote(vote2);
-        option3Q1.addVote(vote3);
-        option2Q1.addVote(vote4);
-        option1Q1.addVote(vote5);
-        option1Q1.addVote(vote6);
-        option3Q1.addVote(vote7);
+        Question question3 = initQuestion("Favourite drink?", false, poll1);
+        initOption("Beer", question3);
+        initOption("Water", question3);
+        initOption("Wine", question3);
+        initOption("Coffee", question3);
+        initOption("Tea", question3);
+        initOption("Lemonade", question3);
+        initOption("Coca Cola", question3);
+        initOption("Coca Cola Zero", question3);
+        initOption("Whiskey", question3);
+        initOption("Gin", question3);
+        initOption("Rum", question3);
+        initOption("Tequila", question3);
 
-        question1.addOption(option1Q1);
-        question1.addOption(option2Q1);
-        question1.addOption(option3Q1);
-        question2.addOption(option1Q2);
-        question2.addOption(option2Q2);
-        question2.addOption(option3Q2);
-        question2.addOption(option4Q2);
+        Question question4 = initQuestion("After-work beer?", true, poll2);
+        initOption("03.01.2025", question4);
+        initOption("04.01.2025", question4);
+        initOption("10.01.2025", question4);
+        initOption("11.01.2025", question4);
+        initOption("17.01.2025", question4);
+        initOption("18.01.2025", question4);
+        initOption("24.01.2025", question4);
+        initOption("25.01.2025", question4);
+        initOption("31.01.2025", question4);
+        initOption("01.02.2025", question4);
 
-        poll.addQuestion(question1);
-        poll.addQuestion(question2);
+        return Arrays.asList(poll1, poll2);
+    }
 
-        pollRepository.save(poll);
+    private void generateRandomVotesForPoll(Poll poll) {
+        poll.getQuestions().forEach(question -> {
+            List<Option> options = question.getOptions();
+            int totalVotes = new Random().nextInt(91) + 10; //
+            for (int i = 0; i < totalVotes; i++) {
+                Option randomOption = options.get(new Random().nextInt(options.size()));
+                initVote(generateRandomEmail(), randomOption);
+            }
+        });
+    }
+
+    private String generateRandomEmail() {
+        String[] domains = {"ilikezhaw.ch", "pollster.com", "voter.dev", "random.li", "mailinator.com"};
+        String name = UUID.randomUUID().toString().substring(0, 8);
+        String domain = domains[new Random().nextInt(domains.length)];
+        return name + "@" + domain;
+    }
+
+    private Poll initPoll(String email, String token, String password) {
+        Poll poll = new Poll();
+        poll.setHostUserEmail(email);
+        poll.setToken(token);
+        poll.setActive(true);
+        poll.setPassword(password);
+        return poll;
+    }
+
+    private Question initQuestion(String text, Boolean multipleChoice, Poll poll) {
+        Question question = new Question();
+        question.setText(text);
+        question.setMultipleChoice(multipleChoice);
+        poll.setQuestion(question);
+        return question;
+    }
+
+    private void initOption(String text, Question question) {
+        Option option = new Option();
+        option.setText(text);
+        question.setOption(option);
+    }
+
+    private void initVote(String email, Option option) {
+        Vote vote = new Vote();
+        vote.setUserEmail(email);
+        option.addVote(vote);
     }
 }

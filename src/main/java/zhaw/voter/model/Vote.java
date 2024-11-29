@@ -20,9 +20,7 @@ public class Vote {
     public Vote() {
     }
 
-    public Vote(String userEmail) {
-        this.userEmail = userEmail;
-    }
+    ;
 
     public Vote(String userEmail, Option option) {
         this.userEmail = userEmail;

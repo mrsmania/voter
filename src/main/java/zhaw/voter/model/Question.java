@@ -26,14 +26,6 @@ public class Question {
     @JsonBackReference
     private Poll poll;
 
-    public Question() {
-    }
-
-    public Question(String text, Boolean multipleChoice) {
-        this.text = text;
-        this.multipleChoice = multipleChoice;
-    }
-
     public Long getId() {
         return id;
     }
@@ -59,6 +51,12 @@ public class Question {
         for (Option option : options) {
             option.setQuestion(this); // Set the poll reference in each question
         }
+    }
+
+    public void setOption(Option option) {
+        this.options.add(option);
+        option.setQuestion(this);
+
     }
 
     public void addOption(Option option) {

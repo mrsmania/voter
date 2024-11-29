@@ -63,6 +63,11 @@ public class Poll {
         }
     }
 
+    public void setQuestion(Question question) {
+        this.questions.add(question);
+        question.setPoll(this);
+    }
+
     public void addQuestion(Question question) {
         this.questions.add(question);
         question.setPoll(this);
