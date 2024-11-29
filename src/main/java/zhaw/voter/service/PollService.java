@@ -12,10 +12,12 @@ import zhaw.voter.util.EmailValidator;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import zhaw.voter.util.InputValidator;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PollService {
@@ -79,21 +81,17 @@ public class PollService {
     }
 
     public List<Long> getAllPollIds() {
-        List<Poll> polls = extractAllPolls();
-        List<Long> pollIds = new ArrayList<>();
-        for (Poll poll : polls) {
-            pollIds.add(poll.getId());
-        }
-        return pollIds;
+        return extractAllPolls()
+                .stream()
+                .map(Poll::getId)
+                .collect(Collectors.toList());
     }
 
     public List<String> getAllTokens() {
-        List<Poll> polls = extractAllPolls();
-        List<String> tokens = new ArrayList<>();
-        for (Poll poll : polls) {
-            tokens.add(poll.getToken());
-        }
-        return tokens;
+        return extractAllPolls()
+                .stream()
+                .map(Poll::getToken)
+                .collect(Collectors.toList());
     }
 
     public Poll addQuestion(long pollId, long questionId) {
@@ -137,9 +135,9 @@ public class PollService {
     }
 
     public Poll findPollByTokenAndPasswordAndEmail(String token, String password, String email) {
-        validateInput(token, "Token is required");
-        validateInput(password, "Password is required");
-        validateInput(email, "Email is required");
+        InputValidator.validateInput(token, "Token is required");
+        InputValidator.validateInput(password, "Password is required");
+        InputValidator.validateInput(email, "Email is required");
         return pollRepository.findByTokenAndPasswordAndHostUserEmail(token, password, email).orElseThrow(() -> new EntityNotFoundException("Poll not found or access denied"));
     }
 
@@ -156,18 +154,12 @@ public class PollService {
             throw new IllegalArgumentException("The poll must have at least one question");
         }
         poll.getQuestions().forEach(question -> {
-            validateInput(question.getText(), "Question text cannot be empty");
+            InputValidator.validateInput(question.getText(), "Question text cannot be empty");
             if (question.getOptions().size() < 2) {
                 throw new IllegalArgumentException("Each question must have at least two options");
             }
-            question.getOptions().forEach(option -> validateInput(option.getText(), "Each option must have text"));
+            question.getOptions().forEach(option -> InputValidator.validateInput(option.getText(), "Each option must have text"));
         });
-    }
-
-    private void validateInput(String input, String errorMessage) {
-        if (input == null || input.trim().isEmpty()) {
-            throw new IllegalArgumentException(errorMessage);
-        }
     }
 
     private String generateRandomString() {

@@ -24,20 +24,17 @@ public class PollController {
 
     @PostMapping("/create")
     public ResponseEntity<Poll> createPoll(@RequestParam String hostUserEmail) {
-        Poll poll = pollService.createPoll(hostUserEmail);
-        return ResponseEntity.ok(poll);
+        return ResponseEntity.ok(pollService.createPoll(hostUserEmail));
     }
 
     @GetMapping("/{token}")
     public ResponseEntity<Poll> getPollByToken(@PathVariable String token) {
-        Poll poll = pollService.getPollByToken(token);
-        return ResponseEntity.ok(poll);
+        return ResponseEntity.ok(pollService.getPollByToken(token));
     }
 
     @PostMapping("/save")
     public ResponseEntity<Poll> savePoll(@RequestBody Poll poll) {
-        Poll savedPoll = pollService.savePoll(poll);
-        return ResponseEntity.ok(savedPoll);
+        return ResponseEntity.ok(pollService.savePoll(poll));
     }
 
     @DeleteMapping("/{pollId}")
@@ -48,20 +45,17 @@ public class PollController {
 
     @GetMapping("/poll-ids")
     public ResponseEntity<List<Long>> getAllPollIds() {
-        List<Long> pollIds = pollService.getAllPollIds();
-        return ResponseEntity.ok(pollIds);
+        return ResponseEntity.ok(pollService.getAllPollIds());
     }
 
     @GetMapping("/tokens")
     public ResponseEntity<List<String>> getAllTokens() {
-        List<String> tokens = pollService.getAllTokens();
-        return ResponseEntity.ok(tokens);
+        return ResponseEntity.ok(pollService.getAllTokens());
     }
 
     @PostMapping("/{pollId}/add-question/{questionId}")
     public ResponseEntity<Poll> addQuestion(@PathVariable long pollId, @PathVariable long questionId) {
-        Poll poll = pollService.addQuestion(pollId, questionId);
-        return ResponseEntity.ok(poll);
+        return ResponseEntity.ok(pollService.addQuestion(pollId, questionId));
     }
 
     @DeleteMapping("/{pollId}/remove-question/{questionId}")
@@ -72,8 +66,7 @@ public class PollController {
 
     @GetMapping("/{token}/export")
     public ResponseEntity<byte[]> exportPollResults(@PathVariable String token) {
-        String csvData = pollService.generatePollResultsCSV(token);
-        byte[] csvBytes = csvData.getBytes();
+        byte[] csvBytes = pollService.generatePollResultsCSV(token).getBytes();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDisposition(ContentDisposition.builder("attachment").filename("poll-results.csv").build());
@@ -82,7 +75,6 @@ public class PollController {
 
     @GetMapping
     public ResponseEntity<Poll> getPoll(@RequestParam String token, @RequestParam String password, @RequestParam String email) {
-        Poll poll = pollService.findPollByTokenAndPasswordAndEmail(token, password, email);
-        return ResponseEntity.ok(poll);
+        return ResponseEntity.ok(pollService.findPollByTokenAndPasswordAndEmail(token, password, email));
     }
 }
