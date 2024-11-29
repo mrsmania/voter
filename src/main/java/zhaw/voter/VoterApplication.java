@@ -21,7 +21,20 @@ public class VoterApplication implements HasLogger {
 
     @PostConstruct
     public void afterInit() {
+        String applicationName = env.getProperty("spring.application.name");
+        String openApiInfo="";
         boolean hasDevProfile = Arrays.asList(env.getActiveProfiles()).contains("dev");
         getLogger().info("Active Profiles: " + Arrays.toString(env.getActiveProfiles()));
+        if (hasDevProfile) {
+            openApiInfo = """
+                     http://localhost:8080/v3/api-docs
+                     http://localhost:8080/v3/api-docs.yaml -> yaml file is downloaded ->
+                    https://editor.swagger.io/
+                     http://localhost:8080/swagger-ui.html\s
+                    """;
+        }
+        System.out.println("\n\nApplication [" + applicationName + "] - Enter in Browser:\nhttp://localhost:8080 \n" +
+        openApiInfo + "\n" +
+                "Active Profiles: " + Arrays.toString(env.getActiveProfiles()) + "\n\n");
     }
 }
