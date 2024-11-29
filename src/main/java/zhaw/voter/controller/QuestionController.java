@@ -25,20 +25,17 @@ public class QuestionController {
 
     @PostMapping("/create")
     public ResponseEntity<Question> createQuestion(@RequestBody String text, @RequestParam boolean multipleChoice) {
-        Question question = questionService.createQuestion(text, multipleChoice);
-        return ResponseEntity.ok(question);
+        return ResponseEntity.ok(questionService.createQuestion(text, multipleChoice));
     }
 
     @GetMapping("/{questionId}")
     public ResponseEntity<Question> getQuestion (@PathVariable long questionId) {
-        Question question = questionService.findQuestion(questionId);
-        return ResponseEntity.ok(question);
+        return ResponseEntity.ok(questionService.findQuestion(questionId));
     }
 
     @PutMapping("/{questionId}")
     public ResponseEntity<Question> updateQuestion(@PathVariable long questionId, @RequestBody Question updatedQuestion) {
-        Question question = questionService.updateQuestion(questionId, updatedQuestion);
-        return ResponseEntity.ok(question);
+        return ResponseEntity.ok(questionService.updateQuestion(questionId, updatedQuestion));
     }
 
     @DeleteMapping("/{questionId}")
@@ -49,13 +46,11 @@ public class QuestionController {
 
     @GetMapping("/question-ids")
     public ResponseEntity<List<Long>> getAllQuestionIds() {
-        List<Long> questionIds = questionService.getAllQuestionIds();
-        return ResponseEntity.ok(questionIds);
+        return ResponseEntity.ok(questionService.getAllQuestionIds());
     }
 
     @PostMapping("/upload-questions")
     public ResponseEntity<List<QuestionDTO>> uploadQuestions(@RequestParam("file") MultipartFile file) throws IOException {
-        List<QuestionDTO> questions = questionService.verifyAndParseQuestions(file);
-        return ResponseEntity.ok(questions);
+        return ResponseEntity.ok(questionService.verifyAndParseQuestions(file));
     }
 }

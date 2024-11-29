@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import zhaw.voter.dto.QuestionDTO;
 import zhaw.voter.model.Question;
+import zhaw.voter.util.InputValidator;
 import zhaw.voter.repository.QuestionRepository;
 
 import java.io.BufferedReader;
@@ -14,6 +15,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -29,9 +31,7 @@ public class QuestionService {
     }
 
     public Question createQuestion(String text, boolean multipleChoice) {
-        if (text == null || text.trim().isEmpty()) {
-            throw new IllegalArgumentException("Question text cannot be empty");
-        }
+        InputValidator.validateInput(text, "Question text cannot be empty");
         Question question = new Question();
         question.setText(text);
         question.setMultipleChoice(multipleChoice);
@@ -72,11 +72,7 @@ public class QuestionService {
         if (questions.isEmpty()) {
             throw new EntityNotFoundException("No questions found");
         }
-        List<Long> questionIds = new ArrayList<>();
-        for (Question question : questions) {
-            questionIds.add(question.getId());
-        }
-        return questionIds;
+        return questions.stream().map(Question::getId).collect(Collectors.toList());
     }
 
     public Question findQuestion(long questionId) {
@@ -84,9 +80,7 @@ public class QuestionService {
     }
 
     public Question updateQuestion(long questionId, Question updatedQuestion) {
-        if (updatedQuestion == null || updatedQuestion.getText().trim().isEmpty()) {
-            throw new IllegalArgumentException("Question text cannot be empty");
-        }
+        InputValidator.validateInput(updatedQuestion.getText(), "Question text cannot be empty");
         Question existingQuestion = questionRepository.findById(questionId).orElseThrow(() ->
                 new EntityNotFoundException("Question with id " + questionId + " not found"));
         existingQuestion.setText(updatedQuestion.getText());
