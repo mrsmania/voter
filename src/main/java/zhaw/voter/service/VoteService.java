@@ -29,32 +29,25 @@ public class VoteService {
     }
 
     @Transactional
-    public Vote toggleVote(String userEmail, Long optionId) {
+    public void toggleVote(String userEmail, Long optionId) {
         EmailValidator.validate(userEmail);
-
         Option option = optionRepository.findById(optionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Option not found"));
-
         Vote existingVote = voteRepository.findByUserEmailAndOptionId(userEmail, optionId);
-
         //if question is not multiple choice, delete all votes of the user
-
         if (!option.getQuestion().getMultipleChoice()) {
             List<Option> options = optionRepository.findByQuestionId(option.getQuestion().getId());
-            for (Option o : options) {
-                Vote v = voteRepository.findByUserEmailAndOptionId(userEmail, o.getId());
-                if (v != null) {
-                    voteRepository.delete(v);
+            options.forEach(opt -> {
+                Vote vote = voteRepository.findByUserEmailAndOptionId(userEmail, opt.getId());
+                if (vote != null) {
+                    voteRepository.delete(vote);
                 }
-            }
+            });
         }
-
         if (existingVote != null) {
             voteRepository.delete(existingVote);
-            return null;
         } else {
-            Vote vote = new Vote(userEmail, option);
-            return voteRepository.save(vote);
+            voteRepository.save(new Vote(userEmail, option));
         }
     }
 
@@ -64,8 +57,8 @@ public class VoteService {
     }
 
     public List<VoteCountDTO> getUpdatedVoteCounts(Long pollId) {
-        List<Option> options = optionRepository.findByPollId(pollId);
-        return options.stream()
+        return optionRepository.findByPollId(pollId)
+                .stream()
                 .map(option -> new VoteCountDTO(option.getId(), option.getVotes().size()))
                 .collect(Collectors.toList());
     }
