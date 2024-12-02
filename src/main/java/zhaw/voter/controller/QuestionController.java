@@ -49,6 +49,17 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.getAllQuestionIds());
     }
 
+    @PostMapping("/{questionId}/add-option/{optionId}")
+    public ResponseEntity<Question> addOption(@PathVariable long questionId, @PathVariable long optionId) {
+        return ResponseEntity.ok(questionService.addOption(questionId, optionId));
+    }
+
+    @DeleteMapping("/{questionId/remove-option/{optionId}")
+    public ResponseEntity<Void> removeOption(@PathVariable long questionId, @PathVariable long optionId) {
+        questionService.removeOption(questionId, optionId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/upload-questions")
     public ResponseEntity<List<QuestionDTO>> uploadQuestions(@RequestParam("file") MultipartFile file) throws IOException {
         return ResponseEntity.ok(questionService.verifyAndParseQuestions(file));

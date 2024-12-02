@@ -24,11 +24,13 @@ public class PollService {
 
     private final PollRepository pollRepository;
     private final QuestionRepository questionRepository;
+    private final QuestionService questionService;
     private final OptionRepository optionRepository;
 
-    public PollService(PollRepository pollRepository, QuestionRepository questionRepository, OptionRepository optionRepository) {
+    public PollService(PollRepository pollRepository, QuestionRepository questionRepository, QuestionService questionService, OptionRepository optionRepository) {
         this.pollRepository = pollRepository;
         this.questionRepository = questionRepository;
+        this.questionService = questionService;
         this.optionRepository = optionRepository;
     }
 
@@ -94,24 +96,33 @@ public class PollService {
                 .collect(Collectors.toList());
     }
 
+    public Poll findPoll(long pollId) {
+        return pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException("Poll with id " + pollId + " not found"));
+    }
+
     public Poll addQuestion(long pollId, long questionId) {
-        Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException("Poll with id " + pollId + " not found"));
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
+        Poll poll = findPoll(pollId);
+        Question question = questionService.findQuestion(questionId);
         poll.addQuestion(question);
         question.setPoll(poll);
+        questionRepository.save(question);
         return pollRepository.save(poll);
     }
 
     public void removeQuestion(long pollId, long questionId) {
-        Poll poll = pollRepository.findById(pollId).orElseThrow(() -> new EntityNotFoundException("Poll with id " + pollId + " not found"));
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
-        if (!poll.getQuestions().contains(question)) {
-            throw new IllegalArgumentException("Question with id " + questionId + " is not part of Poll with id " + pollId);
-        }
-        poll.getQuestions().remove(question);
+        Poll poll = findPoll(pollId);
+        Question question = questionService.findQuestion(questionId);
+        validatePollContainsQuestion(poll, question);
+        poll.removeQuestion(question);
         question.setPoll(null);
         pollRepository.save(poll);
         questionRepository.save(question);
+    }
+
+    private void validatePollContainsQuestion(Poll poll, Question question) {
+        if (!poll.getQuestions().contains(question)) {
+            throw new IllegalArgumentException("Question with id " + question.getId() + " is not part of Poll with id " + poll.getId());
+        }
     }
 
     public String generatePollResultsCSV(String token) {

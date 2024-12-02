@@ -5,7 +5,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import zhaw.voter.dto.QuestionDTO;
+import zhaw.voter.model.Option;
 import zhaw.voter.model.Question;
+import zhaw.voter.repository.OptionRepository;
 import zhaw.voter.util.InputValidator;
 import zhaw.voter.repository.QuestionRepository;
 
@@ -21,9 +23,13 @@ import java.util.stream.Collectors;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final OptionService optionService;
+    private final OptionRepository optionRepository;
 
-    public QuestionService(QuestionRepository questionRepository) {
+    public QuestionService(QuestionRepository questionRepository, OptionService optionService, OptionRepository optionRepository) {
         this.questionRepository = questionRepository;
+        this.optionService = optionService;
+        this.optionRepository = optionRepository;
     }
 
     public List<Question> getAllQuestions() {
@@ -86,5 +92,31 @@ public class QuestionService {
         existingQuestion.setText(updatedQuestion.getText());
         existingQuestion.setMultipleChoice(updatedQuestion.getMultipleChoice());
         return questionRepository.save(existingQuestion);
+    }
+
+    public Question addOption(long questionId, long optionId) {
+        Question question = findQuestion(questionId);
+        Option option = optionService.findOption(optionId);
+        validateQuestionContainsOption(question, option);
+        question.addOption(option);
+        option.setQuestion(question);
+        optionRepository.save(option);
+        return questionRepository.save(question);
+    }
+
+    public void removeOption(long questionId, long optionId) {
+        Question question = findQuestion(questionId);
+        Option option = optionService.findOption(optionId);
+        validateQuestionContainsOption(question, option);
+        question.removeOption(option);
+        option.setQuestion(null);
+        questionRepository.save(question);
+        optionRepository.save(option);
+    }
+
+    public void validateQuestionContainsOption(Question question, Option option){
+        if(!question.getOptions().contains(option)) {
+            throw new IllegalArgumentException("Option with id " + option.getId() + " is not part of Question with id " + question.getId());
+        }
     }
 }
