@@ -23,7 +23,8 @@ public class Poll {
     private String hostUserEmail;
     private boolean active = false;
 
-    public Poll() {}
+    public Poll() {
+    }
 
     public Poll(String hostUserEmail, boolean active, String token, String password) {
         this.hostUserEmail = hostUserEmail;
@@ -40,7 +41,7 @@ public class Poll {
         this.password = password;
     }
 
-    public boolean getActive() { // Use getActive() instead of isActive()
+    public boolean getActive() {
         return active;
     }
 
@@ -59,7 +60,7 @@ public class Poll {
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
         for (Question question : questions) {
-            question.setPoll(this); // Set the poll reference in each question
+            question.setPoll(this);
         }
     }
 

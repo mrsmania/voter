@@ -22,7 +22,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // Set the allowed origins for WebSocket connections
         registry.addEndpoint("/ws")
                 .setAllowedOrigins(allowedOrigins) // Allow requests from Angular app
                 .withSockJS();

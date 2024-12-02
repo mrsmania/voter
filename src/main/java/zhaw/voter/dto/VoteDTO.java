@@ -11,7 +11,6 @@ public class VoteDTO {
         this.optionId = optionId;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

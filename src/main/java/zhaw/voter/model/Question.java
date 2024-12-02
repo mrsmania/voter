@@ -49,7 +49,7 @@ public class Question {
     public void setOptions(List<Option> options) {
         this.options = options;
         for (Option option : options) {
-            option.setQuestion(this); // Set the poll reference in each question
+            option.setQuestion(this);
         }
     }
 

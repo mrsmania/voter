@@ -1,7 +1,6 @@
 package zhaw.voter.config;
 
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import zhaw.voter.model.Poll;
@@ -20,7 +19,6 @@ import java.util.UUID;
 @Profile("dev")
 public class DevConfiguration implements HasLogger {
 
-    @Autowired
     private final PollRepository pollRepository;
 
     public DevConfiguration(PollRepository pollRepository) {
@@ -37,7 +35,7 @@ public class DevConfiguration implements HasLogger {
 
     private List<Poll> createDevPolls() {
         Poll poll1 = initPoll("devuser1@voter.test", "AAAAAA", "111111");
-        Poll poll2 = initPoll("devuser1@voter.test", "000000", "111111");
+        Poll poll2 = initPoll("devuser1@voter.test", "000000", "123456");
 
         Question question1 = initQuestion("Favourite color?", false, poll1);
         initOption("Red", question1);
@@ -49,6 +47,7 @@ public class DevConfiguration implements HasLogger {
         initOption("The Godfather", question2);
         initOption("The Dark Knight", question2);
         initOption("The Matrix", question2);
+        initOption("Star Wars (Original)", question2);
 
         Question question3 = initQuestion("Favourite drink?", false, poll1);
         initOption("Beer", question3);
@@ -82,10 +81,9 @@ public class DevConfiguration implements HasLogger {
     private void generateRandomVotesForPoll(Poll poll) {
         poll.getQuestions().forEach(question -> {
             List<Option> options = question.getOptions();
-            int totalVotes = new Random().nextInt(91) + 10; //
+            int totalVotes = new Random().nextInt(31);
             for (int i = 0; i < totalVotes; i++) {
-                Option randomOption = options.get(new Random().nextInt(options.size()));
-                initVote(generateRandomEmail(), randomOption);
+                initVote(generateRandomEmail(), options.get(new Random().nextInt(options.size())));
             }
         });
     }
