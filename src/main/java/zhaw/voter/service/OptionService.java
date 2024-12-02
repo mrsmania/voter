@@ -65,7 +65,6 @@ public class OptionService {
     public Option addVote(long optionId, long voteId) {
         Option option = findOption(optionId);
         Vote vote = voteService.findVote(voteId);
-        validateOptionContainsVote(option, vote);
         option.addVote(vote);
         voteRepository.save(vote);
         return optionRepository.save(option);

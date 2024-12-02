@@ -97,7 +97,6 @@ public class QuestionService {
     public Question addOption(long questionId, long optionId) {
         Question question = findQuestion(questionId);
         Option option = optionService.findOption(optionId);
-        validateQuestionContainsOption(question, option);
         question.addOption(option);
         optionRepository.save(option);
         return questionRepository.save(question);

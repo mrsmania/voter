@@ -36,6 +36,7 @@ public class VoteService {
     }
 
     public Vote createVote(String userEmail) {
+        EmailValidator.validate(userEmail);
         Vote vote = new Vote();
         vote.setUserEmail(userEmail);
         return voteRepository.save(vote);
