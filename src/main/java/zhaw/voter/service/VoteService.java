@@ -1,5 +1,7 @@
 package zhaw.voter.service;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import zhaw.voter.dto.VoteCountDTO;
 import zhaw.voter.dto.VoteDTO;
 import zhaw.voter.model.Option;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import zhaw.voter.util.InputValidator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +29,43 @@ public class VoteService {
     public VoteService(VoteRepository voteRepository, OptionRepository optionRepository) {
         this.voteRepository = voteRepository;
         this.optionRepository = optionRepository;
+    }
+
+    public List<Vote> getAllVotes() {
+        return voteRepository.findAll();
+    }
+
+    public Vote createVote(String userEmail) {
+        Vote vote = new Vote();
+        vote.setUserEmail(userEmail);
+        return voteRepository.save(vote);
+    }
+
+    public Vote updateVote(long voteId, Vote updatedVote) {
+        InputValidator.validateInput(updatedVote.getUserEmail(), "User Email cannot be empty");
+        Vote existingVote = voteRepository.findById(voteId).orElseThrow(() -> new EntityNotFoundException("Vote with id " + voteId + " not found"));
+        existingVote.setUserEmail(updatedVote.getUserEmail());
+        return voteRepository.save(existingVote);
+    }
+
+    public Vote findVote(Long voteId) {
+        return voteRepository.findById(voteId).orElseThrow(() -> new EntityNotFoundException("Vote with id " + voteId + " not found"));
+    }
+
+    public void deleteVote(long voteId) {
+        try {
+            voteRepository.deleteById(voteId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException("Vote with id " + voteId + " not found");
+        }
+    }
+
+    public List<Long> getAllVoteIds() {
+        List<Vote> votes = voteRepository.findAll();
+        if (votes.isEmpty()) {
+            throw new EntityNotFoundException("No votes found");
+        }
+        return votes.stream().map(Vote::getId).collect(Collectors.toList());
     }
 
     @Transactional

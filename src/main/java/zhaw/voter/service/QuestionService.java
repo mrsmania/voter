@@ -99,7 +99,6 @@ public class QuestionService {
         Option option = optionService.findOption(optionId);
         validateQuestionContainsOption(question, option);
         question.addOption(option);
-        option.setQuestion(question);
         optionRepository.save(option);
         return questionRepository.save(question);
     }
@@ -109,13 +108,12 @@ public class QuestionService {
         Option option = optionService.findOption(optionId);
         validateQuestionContainsOption(question, option);
         question.removeOption(option);
-        option.setQuestion(null);
         questionRepository.save(question);
         optionRepository.save(option);
     }
 
-    public void validateQuestionContainsOption(Question question, Option option){
-        if(!question.getOptions().contains(option)) {
+    public void validateQuestionContainsOption(Question question, Option option) {
+        if (!question.getOptions().contains(option)) {
             throw new IllegalArgumentException("Option with id " + option.getId() + " is not part of Question with id " + question.getId());
         }
     }

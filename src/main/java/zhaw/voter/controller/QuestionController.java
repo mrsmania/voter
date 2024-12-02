@@ -1,6 +1,5 @@
 package zhaw.voter.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,8 +14,11 @@ import java.util.List;
 @RequestMapping("/api/question")
 public class QuestionController {
 
-    @Autowired
-    QuestionService questionService;
+    private final QuestionService questionService;
+
+    public QuestionController(QuestionService questionService) {
+        this.questionService = questionService;
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<Question>> getAllQuestions() {
@@ -29,7 +31,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{questionId}")
-    public ResponseEntity<Question> getQuestion (@PathVariable long questionId) {
+    public ResponseEntity<Question> getQuestion(@PathVariable long questionId) {
         return ResponseEntity.ok(questionService.findQuestion(questionId));
     }
 
@@ -54,7 +56,7 @@ public class QuestionController {
         return ResponseEntity.ok(questionService.addOption(questionId, optionId));
     }
 
-    @DeleteMapping("/{questionId/remove-option/{optionId}")
+    @DeleteMapping("/{questionId}/remove-option/{optionId}")
     public ResponseEntity<Void> removeOption(@PathVariable long questionId, @PathVariable long optionId) {
         questionService.removeOption(questionId, optionId);
         return ResponseEntity.noContent().build();
