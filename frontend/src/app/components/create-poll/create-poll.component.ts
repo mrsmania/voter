@@ -129,11 +129,11 @@ export class CreatePollComponent {
 
     this.pollService.savePoll(pollData).subscribe({
       next: () => {
-        const extras = {state: {message: 'Poll saved successfully'}};
+        this.toastr.success('Poll saved successfully');
         if (activeState) {
-          this.router.navigate([`/poll/${this.token}`], extras);
-        } else {
-          this.router.navigate(['/'], extras);
+          this.router.navigate([`/poll/${this.token}`]);
+        }else {
+          this.router.navigate(['/']);
         }
       },
       error: (error) => {
