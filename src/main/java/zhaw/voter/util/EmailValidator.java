@@ -13,10 +13,10 @@ public class EmailValidator {
 
     public static void validate(String email) {
         if (email == null || email.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email address is required.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email address is required");
         }
         if (!isValidEmail(email)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email address.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid email address");
         }
     }
 

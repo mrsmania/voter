@@ -77,7 +77,7 @@ class PollServiceTest {
             pollService.getPollByToken(token);
         });
 
-        assertEquals("400 BAD_REQUEST \"Poll is inactive.\"", exception.getMessage());
+        assertEquals("400 BAD_REQUEST \"Poll is inactive\"", exception.getMessage());
     }
 
     @Test
@@ -90,7 +90,7 @@ class PollServiceTest {
             pollService.savePoll(poll);
         });
 
-        assertEquals("400 BAD_REQUEST \"The poll must have at least one question.\"", exception.getMessage());
+        assertEquals("400 BAD_REQUEST \"The poll must have at least one question\"", exception.getMessage());
     }
 
     @Test

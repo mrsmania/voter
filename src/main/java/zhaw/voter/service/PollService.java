@@ -50,9 +50,9 @@ public class PollService {
 
     public Poll getPollByToken(String token) {
         Poll poll = pollRepository.findByToken(token)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Poll not found."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Poll not found"));
         if (!poll.getActive()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Poll is inactive.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Poll is inactive");
         }
         return poll;
     }
