@@ -61,13 +61,8 @@ export class LoginComponent {
       e.preventDefault();
       const token = inputs.map((input) => input.value).join('');
       if (token.length !== 6) {
-        this.toastr.error('Bitte geben Sie einen 6-stelligen Code ein.', 'Fehler', {
-          timeOut: 5000,
-          positionClass: 'toast-top-center',
-          closeButton: true,
-          progressBar: true,
-          progressAnimation: 'increasing',
-        });
+        const errorMessage = "Please enter a 6-digit token";
+        this.toastr.error(errorMessage);
         return;
       }
       this.fetchPoll(token.toUpperCase());
