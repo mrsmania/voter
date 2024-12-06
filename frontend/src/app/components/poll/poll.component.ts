@@ -38,17 +38,24 @@ export class PollComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private pollService: PollService,
     private router: Router,
-    private toastr: ToastrService,
+    private toastr: ToastrService
   ) {
   }
 
   ngOnInit() {
     this.connectWebSocket();
+
     const token = this.route.snapshot.paramMap.get('token');
     if (!token) {
       this.router.navigate(['/']);
       return;
     }
+
+    const navigation = window.history.state as { message?: string };
+    if (navigation?.message) {
+      this.toastr.success(navigation.message);
+    }
+
     this.pollService.getPollByToken(token).subscribe({
       next: (poll) => {
         this.poll = poll;
@@ -58,9 +65,10 @@ export class PollComponent implements OnInit, OnDestroy {
         this.router.navigate(['/']);
         const errorMessage = error.error?.message || 'Failed to load poll';
         this.toastr.error(errorMessage);
-      }
+      },
     });
   }
+
 
   initializeChartData() {
     const COLORS = ['#DB3A34', '#177E89', '#FFC857', '#ADEEE3', '#9966FF', '#0F162B', '#F4A261', '#2A9D8F', '#8A6D3B', '#E63946', '#FFB400', '#264653', '#6A0572', '#2B9348', '#F94144'];

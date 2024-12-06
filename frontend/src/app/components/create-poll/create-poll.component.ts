@@ -9,6 +9,7 @@ import {ToastrService} from 'ngx-toastr';
 import {FormsModule} from '@angular/forms';
 import {UpdatePollCredentialsComponent} from './forms/update-poll-credentials/update-poll-credentials.component';
 import {LightSwitchComponent} from './forms/light-switch/light-switch.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-create-poll',
@@ -43,7 +44,8 @@ export class CreatePollComponent {
   @ViewChildren(QuestionComponent) questionComponents!: QueryList<QuestionComponent>;
   @ViewChildren(StateComponent) stateComponent!: QueryList<StateComponent>;
 
-  constructor(private pollService: PollService, private questionService: QuestionService, private toastr: ToastrService) {}
+  constructor(private pollService: PollService, private questionService: QuestionService, private toastr: ToastrService, private router: Router) {
+  }
 
   onUsernameSubmitted(response: any) {
     this.showQuestions = true;
@@ -127,13 +129,12 @@ export class CreatePollComponent {
 
     this.pollService.savePoll(pollData).subscribe({
       next: () => {
-        this.toastr.success('Poll saved successfully');
+        const extras = {state: {message: 'Poll saved successfully'}};
         if (activeState) {
-          window.location.href = `/poll/${this.token}`;
-        }else {
-          window.location.href = '/'
+          this.router.navigate([`/poll/${this.token}`], extras);
+        } else {
+          this.router.navigate(['/'], extras);
         }
-
       },
       error: (error) => {
         const errorMessage = error.error?.message || 'Failed to save poll';

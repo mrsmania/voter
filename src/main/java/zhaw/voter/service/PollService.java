@@ -58,20 +58,23 @@ public class PollService {
     }
 
     public Poll savePoll(Poll poll) {
-        Poll existingPoll = pollRepository.findById(
-                Optional.ofNullable(poll.getId())
-                        .orElseThrow(() -> new IllegalArgumentException("Poll id cannot be null"))
-        ).orElseThrow(() -> new EntityNotFoundException("Poll with id " + poll.getId() + " not found"));
-        validatePoll(existingPoll);
-        existingPoll.getQuestions().clear();
-        existingPoll.getQuestions().addAll(poll.getQuestions());
-        existingPoll.setActive(poll.getActive());
-
-        existingPoll.getQuestions().forEach(question -> {
-            optionRepository.saveAll(question.getOptions());
-            questionRepository.save(question);
-        });
-        return pollRepository.save(existingPoll);
+        validatePoll(poll);
+        Optional<Poll> existingPollOpt = pollRepository.findById(poll.getId());
+        if (existingPollOpt.isPresent()) {
+            Poll existingPoll = existingPollOpt.get();
+            // Clear the existing list, then add all new questions
+            existingPoll.setActive(poll.getActive());
+            existingPoll.getQuestions().clear();
+            existingPoll.getQuestions().addAll(poll.getQuestions());
+            existingPoll.setActive(poll.getActive());
+            for (Question question : existingPoll.getQuestions()) {
+                optionRepository.saveAll(question.getOptions());
+                questionRepository.save(question);
+            }
+            return pollRepository.save(existingPoll);
+        } else {
+            throw new EntityNotFoundException("Poll with ID " + poll.getId() + " does not exist.");
+        }
     }
 
     public void deletePoll(long pollId) {
