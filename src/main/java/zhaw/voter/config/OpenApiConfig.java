@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Profile;
 
 @Profile("dev")
 @Configuration
-public class OpenApi30Config {
+public class OpenApiConfig {
     private final String moduleName;
     private final String apiVersion;
 
-    public OpenApi30Config(
+    public OpenApiConfig(
             @Value("${spring.application.name}") String moduleName,
             @Value("${springdoc.version}") String apiVersion) {
         this.moduleName = moduleName;
@@ -26,6 +26,6 @@ public class OpenApi30Config {
     public OpenAPI customOpenAPI(@Value("${app.server}") String contextPath) {
         final String apiTitle = String.format("%s API", StringUtils.capitalize(moduleName));
         return new OpenAPI()
-                .info(new Info().title(apiTitle).version(apiVersion));
+                .info(new Info().title(apiTitle).version(apiVersion).description("All API endpoints for the Voter application"));
     }
 }

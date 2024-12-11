@@ -8,7 +8,6 @@ import zhaw.voter.model.Option;
 import zhaw.voter.model.Question;
 import zhaw.voter.model.Vote;
 import zhaw.voter.repository.PollRepository;
-import zhaw.voter.util.HasLogger;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,13 +16,12 @@ import java.util.UUID;
 
 @Configuration
 @Profile("dev")
-public class DevConfiguration implements HasLogger {
+public class DevConfig {
 
     private final PollRepository pollRepository;
 
-    public DevConfiguration(PollRepository pollRepository) {
+    public DevConfig(PollRepository pollRepository) {
         this.pollRepository = pollRepository;
-        getLogger().info("*****YOU ARE IN DEV PROFILE*****");
     }
 
     @PostConstruct
