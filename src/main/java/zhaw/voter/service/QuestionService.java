@@ -116,4 +116,9 @@ public class QuestionService {
             throw new IllegalArgumentException("Option with id " + option.getId() + " is not part of Question with id " + question.getId());
         }
     }
+
+    public int getTotalVotesByQuestionId(Long questionId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new EntityNotFoundException("Question with id " + questionId + " not found"));
+        return question.getTotalVotes();
+    }
 }

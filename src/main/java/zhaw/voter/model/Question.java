@@ -84,4 +84,10 @@ public class Question {
     public void setMultipleChoice(Boolean multipleChoice) {
         this.multipleChoice = multipleChoice;
     }
+
+    public int getTotalVotes() {
+        return options.stream()
+                .mapToInt(option -> option.getVotes().size())
+                .sum();
+    }
 }

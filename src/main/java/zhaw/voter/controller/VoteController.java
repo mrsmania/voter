@@ -67,6 +67,12 @@ public class VoteController {
         return ResponseEntity.ok(voteService.getAllVoteIds());
     }
 
+    @Operation(summary = "Retrieve number of votes per Question", description = "Fetches the total number of votes per question")
+    @GetMapping("/total-per-question")
+    public ResponseEntity<Map<Long, Long>> getTotalVotesPerQuestion() {
+        return ResponseEntity.ok(voteService.getTotalVotesPerQuestion());
+    }
+
     @Operation(summary = "Toggle a vote", description = "Toggles a vote for a user and option")
     @PostMapping
     public ResponseEntity<Map<String, String>> toggleVote(

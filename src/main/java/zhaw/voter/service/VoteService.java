@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import zhaw.voter.util.InputValidator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,5 +103,13 @@ public class VoteService {
                 .stream()
                 .map(option -> new VoteCountDTO(option.getId(), option.getVotes().size()))
                 .collect(Collectors.toList());
+    }
+
+    public Map<Long, Long> getTotalVotesPerQuestion() {
+        return voteRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        vote -> vote.getOption().getQuestion().getId(),
+                        Collectors.counting()
+                ));
     }
 }

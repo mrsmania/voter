@@ -84,6 +84,13 @@ public class QuestionController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Retrieve total number of votes for this question", description = "Fetches the total number of votes for this question.")
+    @GetMapping("/{id}/total-votes")
+    public ResponseEntity<Integer> getTotalVotes(
+            @PathVariable @Parameter(description = "ID of the question") long id) {
+        return ResponseEntity.ok(questionService.getTotalVotesByQuestionId(id));
+    }
+
     @Operation(summary = "Upload questions via file", description = "Uploads and parses a file to create multiple questions at once.")
     @PostMapping("/upload-questions")
     public ResponseEntity<List<QuestionDTO>> uploadQuestions(
