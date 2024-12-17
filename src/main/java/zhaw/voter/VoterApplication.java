@@ -7,6 +7,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import zhaw.voter.util.HasLogger;
 
+import java.net.InetAddress;
 import java.util.Arrays;
 
 @SpringBootApplication
@@ -16,6 +17,12 @@ public class VoterApplication implements HasLogger {
     private Environment env;
 
     public static void main(String[] args) {
+        try {
+            String currentIp = InetAddress.getLocalHost().getHostAddress();
+            System.setProperty("NETWORK_IP", currentIp); // Set network IP to access app from other devices in the same network - only works in DEV profile since the  NETWORK_IP variable is only used in the application-dev.properties file and not in the application-prod.properties.
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         SpringApplication.run(VoterApplication.class, args);
     }
 
